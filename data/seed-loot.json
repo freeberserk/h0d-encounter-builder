@@ -1,0 +1,96 @@
+{
+  "machine": [
+    {
+      "id": "H0D5cfe3cc08ea3d",
+      "label": "Plaques métalliques",
+      "weight": 4,
+      "detail": "Ressource officielle H0D Loot"
+    },
+    {
+      "id": "H0Db86f1831bcb18",
+      "label": "Fibres synthétiques",
+      "weight": 3,
+      "detail": "Ressource officielle H0D Loot"
+    },
+    {
+      "id": "H0Daed48acc66514",
+      "label": "Lentilles optiques",
+      "weight": 2,
+      "detail": "Ressource officielle H0D Loot"
+    },
+    {
+      "id": "H0D7ec3fba7beb68",
+      "label": "Cellule d’énergie faible",
+      "weight": 2,
+      "detail": "Ressource officielle H0D Loot"
+    },
+    {
+      "id": "H0Ded93f9bf328aa",
+      "label": "Circuit ancien abîmé",
+      "weight": 2,
+      "detail": "Ressource officielle H0D Loot"
+    },
+    {
+      "id": "H0D56ae65fe6c58d",
+      "label": "Fluide élémentaire — Blaze",
+      "weight": 1,
+      "detail": "Ressource officielle H0D Loot"
+    },
+    {
+      "id": "H0D7ba6aeddf7fe9",
+      "label": "Fluide élémentaire — Chillwater",
+      "weight": 1,
+      "detail": "Ressource officielle H0D Loot"
+    },
+    {
+      "id": "H0D51b786338ce5c",
+      "label": "Fluide élémentaire — Sparker",
+      "weight": 1,
+      "detail": "Ressource officielle H0D Loot"
+    },
+    {
+      "id": "H0De8811bfabfd89",
+      "label": "Fluide élémentaire — Metalburn",
+      "weight": 1,
+      "detail": "Ressource officielle H0D Loot"
+    },
+    {
+      "id": "H0D522ddda27504c",
+      "label": "Cellule d’énergie stable",
+      "weight": 1,
+      "detail": "Ressource officielle H0D Loot"
+    },
+    {
+      "id": "H0Ddbe158f668faa",
+      "label": "Circuit ancien intact",
+      "weight": 1,
+      "detail": "Ressource officielle H0D Loot"
+    }
+  ],
+  "creature": [
+    {
+      "id": "H0D9bb8867919ef9",
+      "label": "Viande animale",
+      "weight": 4,
+      "detail": "Ressource officielle H0D Loot"
+    },
+    {
+      "id": "H0Dcaa63978d3472",
+      "label": "Os animal",
+      "weight": 3,
+      "detail": "Ressource officielle H0D Loot"
+    },
+    {
+      "id": "H0D3a82f9999928e",
+      "label": "Peau animale",
+      "weight": 2,
+      "detail": "Ressource officielle H0D Loot"
+    },
+    {
+      "id": "H0D54f849528fd48",
+      "label": "Trophée animal rare",
+      "weight": 1,
+      "detail": "Ressource officielle H0D Loot"
+    }
+  ]
+}

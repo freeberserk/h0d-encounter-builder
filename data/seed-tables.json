@@ -1,0 +1,817 @@
+{
+  "vallee": {
+    "name": "Vallée de la Dent d’Ambre",
+    "available": true,
+    "version": 2,
+    "results": [
+      {
+        "id": "0a4429147979a7b9",
+        "description": "Cerfs ou machines herbivores calmes",
+        "type": "hors-combat",
+        "xp": 0,
+        "xpMin": 0,
+        "xpMax": 0,
+        "weight": 1
+      },
+      {
+        "id": "fca72e3cfba01f0c",
+        "description": "1d3 chiens sauvages",
+        "type": "autre",
+        "xp": 30,
+        "xpMin": 10,
+        "xpMax": 30,
+        "weight": 1
+      },
+      {
+        "id": "59c4eb66936fd13b",
+        "description": "1 loup gris",
+        "type": "autre",
+        "xp": 35,
+        "xpMin": 35,
+        "xpMax": 35,
+        "weight": 1
+      },
+      {
+        "id": "fd808f1017122eec",
+        "description": "1 sanglier territorial",
+        "type": "autre",
+        "xp": 35,
+        "xpMin": 35,
+        "xpMax": 35,
+        "weight": 1
+      },
+      {
+        "id": "4ca3096df8d05374",
+        "description": "2 chacals affamés",
+        "type": "autre",
+        "xp": 20,
+        "xpMin": 20,
+        "xpMax": 20,
+        "weight": 1
+      },
+      {
+        "id": "76aa812bbbff8266",
+        "description": "1 Watcher isolé",
+        "type": "machine",
+        "xp": 15,
+        "xpMin": 15,
+        "xpMax": 15,
+        "weight": 1
+      },
+      {
+        "id": "16d6832a8967c50c",
+        "description": "2 Watchers nerveux",
+        "type": "machine",
+        "xp": 30,
+        "xpMin": 30,
+        "xpMax": 30,
+        "weight": 1
+      },
+      {
+        "id": "9485f371e46f774c",
+        "description": "1 Scrapper fouilleur",
+        "type": "machine",
+        "xp": 40,
+        "xpMin": 40,
+        "xpMax": 40,
+        "weight": 1
+      },
+      {
+        "id": "49366a15d1e10c63",
+        "description": "1 machine dressée paniquée",
+        "type": "machine",
+        "xp": 20,
+        "xpMin": 20,
+        "xpMax": 20,
+        "weight": 1
+      },
+      {
+        "id": "cbe406dfa06e53cd",
+        "description": "1 recrue pillarde + 1 chien de camp",
+        "type": "autre",
+        "xp": 35,
+        "xpMin": 35,
+        "xpMax": 35,
+        "weight": 1
+      },
+      {
+        "id": "7dd5792c86df637c",
+        "description": "1 éclaireur de la Dent en difficulté",
+        "type": "hors-combat",
+        "xp": 30,
+        "xpMin": 15,
+        "xpMax": 30,
+        "weight": 1
+      },
+      {
+        "id": "838f4f377a357c76",
+        "description": "Signal Focus parasite, pas de combat",
+        "type": "hors-combat",
+        "xp": 30,
+        "xpMin": 30,
+        "xpMax": 30,
+        "weight": 1
+      }
+    ]
+  },
+  "gorges": {
+    "name": "Gorges Brisées du Sud",
+    "available": true,
+    "version": 2,
+    "results": [
+      {
+        "id": "5d2514b8d16799f2",
+        "description": "Vautours noirs autour d’une carcasse",
+        "type": "hors-combat",
+        "xp": 0,
+        "xpMin": 0,
+        "xpMax": 0,
+        "weight": 1
+      },
+      {
+        "id": "bdf302d77c15ab84",
+        "description": "1 serpent venimeux ou scorpion",
+        "type": "autre",
+        "xp": 20,
+        "xpMin": 20,
+        "xpMax": 20,
+        "weight": 1
+      },
+      {
+        "id": "8692abd76a61617e",
+        "description": "2 bouquetins sur paroi dangereuse",
+        "type": "hors-combat",
+        "xp": 30,
+        "xpMin": 30,
+        "xpMax": 30,
+        "weight": 1
+      },
+      {
+        "id": "869c045f82671f38",
+        "description": "2 Watchers ensablés",
+        "type": "machine",
+        "xp": 30,
+        "xpMin": 30,
+        "xpMax": 30,
+        "weight": 1
+      },
+      {
+        "id": "9c483c3541712e16",
+        "description": "1 Redeye Watcher",
+        "type": "machine",
+        "xp": 40,
+        "xpMin": 40,
+        "xpMax": 40,
+        "weight": 1
+      },
+      {
+        "id": "9b3d81073806fd49",
+        "description": "1 Scrapper fouillant une épave",
+        "type": "machine",
+        "xp": 40,
+        "xpMin": 40,
+        "xpMax": 40,
+        "weight": 1
+      },
+      {
+        "id": "f461769692fa249f",
+        "description": "1 Longleg nerveux",
+        "type": "machine",
+        "xp": 80,
+        "xpMin": 80,
+        "xpMax": 80,
+        "weight": 1
+      },
+      {
+        "id": "d0f4b378dc05d5a5",
+        "description": "2 Pillards Rouges recrues",
+        "type": "autre",
+        "xp": 40,
+        "xpMin": 40,
+        "xpMax": 40,
+        "weight": 1
+      },
+      {
+        "id": "67c22f9f3b879d6b",
+        "description": "1 maraudeur + 1 recrue pillarde",
+        "type": "autre",
+        "xp": 60,
+        "xpMin": 60,
+        "xpMax": 60,
+        "weight": 1
+      },
+      {
+        "id": "cfc4f5997c2378da",
+        "description": "1 Hyène + 2 chacals",
+        "type": "autre",
+        "xp": 50,
+        "xpMin": 50,
+        "xpMax": 50,
+        "weight": 1
+      },
+      {
+        "id": "6de9e7b8acecba8a",
+        "description": "1 Tisseur ELYS-9 en observation",
+        "type": "machine",
+        "xp": 100,
+        "xpMin": 100,
+        "xpMax": 100,
+        "weight": 1
+      },
+      {
+        "id": "d67e9f666c80f374",
+        "description": "1 Sawtooth attiré par les signaux",
+        "type": "machine",
+        "xp": 140,
+        "xpMin": 140,
+        "xpMax": 140,
+        "weight": 1
+      }
+    ]
+  },
+  "plaines": {
+    "name": "Plaines de Récupération",
+    "available": false,
+    "results": []
+  },
+  "gaia": {
+    "name": "Forêt-Matrice de GAIA",
+    "available": true,
+    "version": 2,
+    "results": [
+      {
+        "id": "9d7ef95ea34e2f4c",
+        "description": "Cerfs, traces de machines, aucun combat",
+        "type": "hors-combat",
+        "xp": 0,
+        "xpMin": 0,
+        "xpMax": 0,
+        "weight": 1
+      },
+      {
+        "id": "ba9eaedad4f41666",
+        "description": "1 sanglier",
+        "type": "autre",
+        "xp": 35,
+        "xpMin": 35,
+        "xpMax": 35,
+        "weight": 1
+      },
+      {
+        "id": "a53018aa5a0ab17a",
+        "description": "1 lynx en embuscade",
+        "type": "autre",
+        "xp": 35,
+        "xpMin": 35,
+        "xpMax": 35,
+        "weight": 1
+      },
+      {
+        "id": "9565a5a6a1a30e32",
+        "description": "2 loups gris",
+        "type": "autre",
+        "xp": 70,
+        "xpMin": 70,
+        "xpMax": 70,
+        "weight": 1
+      },
+      {
+        "id": "6b519e091fde10f4",
+        "description": "1 ours brun",
+        "type": "autre",
+        "xp": 150,
+        "xpMin": 150,
+        "xpMax": 150,
+        "weight": 1
+      },
+      {
+        "id": "9235f712a8f7b726",
+        "description": "1 Watcher + 1 Grazer paniqué",
+        "type": "machine",
+        "xp": 30,
+        "xpMin": 30,
+        "xpMax": 30,
+        "weight": 1
+      },
+      {
+        "id": "35751cf88fed8921",
+        "description": "1 Longleg",
+        "type": "machine",
+        "xp": 80,
+        "xpMin": 80,
+        "xpMax": 80,
+        "weight": 1
+      },
+      {
+        "id": "f2c6957d8798de0a",
+        "description": "1 Sawtooth",
+        "type": "machine",
+        "xp": 140,
+        "xpMin": 140,
+        "xpMax": 140,
+        "weight": 1
+      },
+      {
+        "id": "7be4a33e19895d3d",
+        "description": "1 loup marqué par le Focus",
+        "type": "autre",
+        "xp": 90,
+        "xpMin": 90,
+        "xpMax": 90,
+        "weight": 1
+      },
+      {
+        "id": "af61fb9a531161b2",
+        "description": "1 nuée d’insectes charognards",
+        "type": "autre",
+        "xp": 45,
+        "xpMin": 45,
+        "xpMax": 45,
+        "weight": 1
+      },
+      {
+        "id": "8c693ef1b952b170",
+        "description": "1 Machine Blanche observatrice",
+        "type": "machine",
+        "xp": 100,
+        "xpMin": 100,
+        "xpMax": 100,
+        "weight": 1
+      },
+      {
+        "id": "9af3074b86b5582c",
+        "description": "1 prédateur restauré HelioSium, apparition précoce/rare",
+        "type": "autre",
+        "xp": 250,
+        "xpMin": 250,
+        "xpMax": 250,
+        "weight": 1
+      }
+    ]
+  },
+  "hades": {
+    "name": "Ruines-Miroirs de HADES",
+    "available": true,
+    "version": 2,
+    "results": [
+      {
+        "id": "19d3586445f5e0fa",
+        "description": "Archive instable / hallucination holographique",
+        "type": "hors-combat",
+        "xp": 30,
+        "xpMin": 30,
+        "xpMax": 30,
+        "weight": 1
+      },
+      {
+        "id": "bb96c0399fa1c7d5",
+        "description": "1d3 rats métallivores",
+        "type": "autre",
+        "xp": 30,
+        "xpMin": 10,
+        "xpMax": 30,
+        "weight": 1
+      },
+      {
+        "id": "1dfb066b814baa84",
+        "description": "1 nuée de rats métallivores",
+        "type": "autre",
+        "xp": 80,
+        "xpMin": 80,
+        "xpMax": 80,
+        "weight": 1
+      },
+      {
+        "id": "5293ff62ed50dae6",
+        "description": "2 corbeaux de ruine",
+        "type": "autre",
+        "xp": 20,
+        "xpMin": 20,
+        "xpMax": 20,
+        "weight": 1
+      },
+      {
+        "id": "730fea27fbfbfdca",
+        "description": "2 chiens sauvages",
+        "type": "autre",
+        "xp": 20,
+        "xpMin": 20,
+        "xpMax": 20,
+        "weight": 1
+      },
+      {
+        "id": "7af83e07afbc8992",
+        "description": "1 initié du Renouveau",
+        "type": "autre",
+        "xp": 15,
+        "xpMin": 15,
+        "xpMax": 15,
+        "weight": 1
+      },
+      {
+        "id": "1777b0588fcfd0a7",
+        "description": "2 initiés du Renouveau",
+        "type": "autre",
+        "xp": 30,
+        "xpMin": 30,
+        "xpMax": 30,
+        "weight": 1
+      },
+      {
+        "id": "23e5e52c52e3e578",
+        "description": "1 prêcheur du Renouveau",
+        "type": "autre",
+        "xp": 80,
+        "xpMin": 80,
+        "xpMax": 80,
+        "weight": 1
+      },
+      {
+        "id": "945f25d5aa4c4303",
+        "description": "1 prêcheur + 2 initiés",
+        "type": "autre",
+        "xp": 110,
+        "xpMin": 110,
+        "xpMax": 110,
+        "weight": 1
+      },
+      {
+        "id": "f8a06359afac8cde",
+        "description": "1 Oracle du Renouveau",
+        "type": "autre",
+        "xp": 220,
+        "xpMin": 220,
+        "xpMax": 220,
+        "weight": 1
+      },
+      {
+        "id": "3f049499bae9fc8f",
+        "description": "1 Scrapper blanc",
+        "type": "machine",
+        "xp": 100,
+        "xpMin": 100,
+        "xpMax": 100,
+        "weight": 1
+      },
+      {
+        "id": "8bb72bddbf9eda79",
+        "description": "Défense HADES + machine lourde inactive",
+        "type": "mixte",
+        "xp": 200,
+        "xpMin": 100,
+        "xpMax": 200,
+        "weight": 1
+      }
+    ]
+  },
+  "hephaistos": {
+    "name": "Désert Solaire d’HÉPHAÏSTOS",
+    "available": true,
+    "version": 2,
+    "results": [
+      {
+        "id": "53919f062ddee114",
+        "description": "Tempête de chaleur / mirage solaire",
+        "type": "hors-combat",
+        "xp": 30,
+        "xpMin": 30,
+        "xpMax": 30,
+        "weight": 1
+      },
+      {
+        "id": "134781106f005d6c",
+        "description": "1 scorpion des dunes",
+        "type": "autre",
+        "xp": 20,
+        "xpMin": 20,
+        "xpMax": 20,
+        "weight": 1
+      },
+      {
+        "id": "e1561bfe427c4fc1",
+        "description": "2 serpents venimeux",
+        "type": "autre",
+        "xp": 40,
+        "xpMin": 40,
+        "xpMax": 40,
+        "weight": 1
+      },
+      {
+        "id": "1706aee7dfdeba0a",
+        "description": "1 rapace géant",
+        "type": "autre",
+        "xp": 40,
+        "xpMin": 40,
+        "xpMax": 40,
+        "weight": 1
+      },
+      {
+        "id": "052f76231770d9ee",
+        "description": "1 Lancehorn",
+        "type": "machine",
+        "xp": 80,
+        "xpMin": 80,
+        "xpMax": 80,
+        "weight": 1
+      },
+      {
+        "id": "68de3b1b9f453844",
+        "description": "1 Shell-Walker escorté",
+        "type": "machine",
+        "xp": 140,
+        "xpMin": 140,
+        "xpMax": 140,
+        "weight": 1
+      },
+      {
+        "id": "28f6d8ab39aa6329",
+        "description": "1 Fire Bellowback",
+        "type": "machine",
+        "xp": 250,
+        "xpMin": 250,
+        "xpMax": 250,
+        "weight": 1
+      },
+      {
+        "id": "fceda449da856ca8",
+        "description": "2 éclaireurs Héritiers du Soleil",
+        "type": "autre",
+        "xp": 80,
+        "xpMin": 80,
+        "xpMax": 80,
+        "weight": 1
+      },
+      {
+        "id": "5e0b2a1a05d45c4b",
+        "description": "1 soldat Héritier + 1 éclaireur",
+        "type": "autre",
+        "xp": 120,
+        "xpMin": 120,
+        "xpMax": 120,
+        "weight": 1
+      },
+      {
+        "id": "7a4d825a18ab3b2a",
+        "description": "1 artilleur solaire",
+        "type": "autre",
+        "xp": 120,
+        "xpMin": 120,
+        "xpMax": 120,
+        "weight": 1
+      },
+      {
+        "id": "e0dcd21b2ed49581",
+        "description": "1 capitaine des Héritiers",
+        "type": "autre",
+        "xp": 250,
+        "xpMin": 250,
+        "xpMax": 250,
+        "weight": 1
+      },
+      {
+        "id": "6fb78b658af2a849",
+        "description": "Elys-9 déclenche une défense d’HÉPHAÏSTOS",
+        "type": "mixte",
+        "xp": 400,
+        "xpMin": 200,
+        "xpMax": 400,
+        "weight": 1
+      }
+    ]
+  },
+  "titans": {
+    "name": "Cimetière des Titans",
+    "available": true,
+    "version": 2,
+    "results": [
+      {
+        "id": "ec3db20363a211df",
+        "description": "Champ de carcasses instables",
+        "type": "hors-combat",
+        "xp": 50,
+        "xpMin": 50,
+        "xpMax": 50,
+        "weight": 1
+      },
+      {
+        "id": "63b1dd9ce53dc2e6",
+        "description": "1 serpent noir du Cimetière",
+        "type": "autre",
+        "xp": 90,
+        "xpMin": 90,
+        "xpMax": 90,
+        "weight": 1
+      },
+      {
+        "id": "acf4aa37ece6c8b2",
+        "description": "1 nuée d’insectes charognards",
+        "type": "autre",
+        "xp": 45,
+        "xpMin": 45,
+        "xpMax": 45,
+        "weight": 1
+      },
+      {
+        "id": "d9e83a71d715abf2",
+        "description": "2 Scrappers",
+        "type": "machine",
+        "xp": 80,
+        "xpMin": 80,
+        "xpMax": 80,
+        "weight": 1
+      },
+      {
+        "id": "4bc0ce2f9936d8fc",
+        "description": "1 Ravager endommagé",
+        "type": "machine",
+        "xp": 250,
+        "xpMin": 250,
+        "xpMax": 250,
+        "weight": 1
+      },
+      {
+        "id": "b398c5dac79afeca",
+        "description": "1 Stalker en chasse",
+        "type": "machine",
+        "xp": 250,
+        "xpMin": 250,
+        "xpMax": 250,
+        "weight": 1
+      },
+      {
+        "id": "7cca8c365c94b866",
+        "description": "1 groupe pillard : maraudeur + 2 recrues",
+        "type": "autre",
+        "xp": 80,
+        "xpMin": 80,
+        "xpMax": 80,
+        "weight": 1
+      },
+      {
+        "id": "707c55d746ab0791",
+        "description": "1 briseur + 1 maraudeur",
+        "type": "autre",
+        "xp": 115,
+        "xpMin": 115,
+        "xpMax": 115,
+        "weight": 1
+      },
+      {
+        "id": "e303ed6ab94fe020",
+        "description": "1 prêcheur + 1 zélote du Renouveau",
+        "type": "autre",
+        "xp": 210,
+        "xpMin": 210,
+        "xpMax": 210,
+        "weight": 1
+      },
+      {
+        "id": "59108bbe4bd615a3",
+        "description": "1 Corruptor dormant qui se réveille",
+        "type": "machine",
+        "xp": 650,
+        "xpMin": 650,
+        "xpMax": 650,
+        "weight": 1
+      },
+      {
+        "id": "369c38e0ea16ad08",
+        "description": "1 Ravager blanc",
+        "type": "machine",
+        "xp": 400,
+        "xpMin": 400,
+        "xpMax": 400,
+        "weight": 1
+      },
+      {
+        "id": "88a52ad6a7f9b01e",
+        "description": "Défense du Creuset ELYSIUM",
+        "type": "mixte",
+        "xp": 900,
+        "xpMin": 500,
+        "xpMax": 900,
+        "weight": 1
+      }
+    ]
+  },
+  "elysium": {
+    "name": "Salles Blanches d’ELYSIUM",
+    "available": true,
+    "version": 2,
+    "results": [
+      {
+        "id": "ecf3b3cf62f2d72a",
+        "description": "Couloir stérile, aucun combat, malaise",
+        "type": "hors-combat",
+        "xp": 0,
+        "xpMin": 0,
+        "xpMax": 0,
+        "weight": 1
+      },
+      {
+        "id": "ca636bcf096d4d1d",
+        "description": "Rats pâles / rats métallivores",
+        "type": "autre",
+        "xp": 30,
+        "xpMin": 10,
+        "xpMax": 30,
+        "weight": 1
+      },
+      {
+        "id": "0ddef5b6d32bc2d4",
+        "description": "Captifs désorientés",
+        "type": "hors-combat",
+        "xp": 20,
+        "xpMin": 20,
+        "xpMax": 20,
+        "weight": 1
+      },
+      {
+        "id": "a9a25a8feb110cf5",
+        "description": "1 Tisseur ELYS-9",
+        "type": "machine",
+        "xp": 100,
+        "xpMin": 100,
+        "xpMax": 100,
+        "weight": 1
+      },
+      {
+        "id": "3a777e8a940be579",
+        "description": "2 Tisseurs ELYS-9",
+        "type": "machine",
+        "xp": 200,
+        "xpMin": 200,
+        "xpMax": 200,
+        "weight": 1
+      },
+      {
+        "id": "9c1e38bbcb8c4b34",
+        "description": "1 Récolteur ELYS-9",
+        "type": "machine",
+        "xp": 175,
+        "xpMin": 175,
+        "xpMax": 175,
+        "weight": 1
+      },
+      {
+        "id": "f0adc34fe50d5ef5",
+        "description": "1 bête de laboratoire échappée",
+        "type": "autre",
+        "xp": 160,
+        "xpMin": 160,
+        "xpMax": 160,
+        "weight": 1
+      },
+      {
+        "id": "4463e1d46ae88454",
+        "description": "1 Moissonneur ELYS-9",
+        "type": "machine",
+        "xp": 550,
+        "xpMin": 550,
+        "xpMax": 550,
+        "weight": 1
+      },
+      {
+        "id": "726b0a6edd724f16",
+        "description": "1 Stalker blanc",
+        "type": "machine",
+        "xp": 400,
+        "xpMin": 400,
+        "xpMax": 400,
+        "weight": 1
+      },
+      {
+        "id": "8b79cff639d4ef86",
+        "description": "1 Gardien ELYSIUM",
+        "type": "machine",
+        "xp": 800,
+        "xpMin": 800,
+        "xpMax": 800,
+        "weight": 1
+      },
+      {
+        "id": "15eb3e6852b6b158",
+        "description": "Avatar partiel ELYS-9",
+        "type": "autre",
+        "xp": 850,
+        "xpMin": 850,
+        "xpMax": 850,
+        "weight": 1
+      },
+      {
+        "id": "fea49d236d38c9a5",
+        "description": "Avatar ELYS-9 complet",
+        "type": "autre",
+        "xp": 1200,
+        "xpMin": 1200,
+        "xpMax": 1200,
+        "weight": 1
+      }
+    ]
+  },
+  "heliosium": {
+    "name": "Terres Restaurées d’HelioSium",
+    "available": false,
+    "results": []
+  }
+}

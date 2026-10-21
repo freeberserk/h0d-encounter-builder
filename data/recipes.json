@@ -1,0 +1,140 @@
+{
+  "gorges": {
+    "Vautours noirs autour d’une carcasse": [],
+    "1 serpent venimeux ou scorpion": null,
+    "2 bouquetins sur paroi dangereuse": null,
+    "2 Watchers ensablés": [
+      {
+        "id": "machine:watcher",
+        "qty": 2,
+        "context": "ensablés"
+      }
+    ],
+    "1 Redeye Watcher": [
+      {
+        "id": "machine:redeye-watcher",
+        "qty": 1
+      }
+    ],
+    "1 Scrapper fouillant une épave": [
+      {
+        "id": "machine:scrapper-standard",
+        "qty": 1,
+        "context": "fouille une épave"
+      }
+    ],
+    "1 Longleg nerveux": [
+      {
+        "id": "machine:longleg",
+        "qty": 1
+      }
+    ],
+    "2 Pillards Rouges recrues": null,
+    "1 maraudeur + 1 recrue pillarde": null,
+    "1 Hyène + 2 chacals": null,
+    "1 Tisseur ELYS-9 en observation": [
+      {
+        "id": "machine:tisseur-elys9",
+        "qty": 1,
+        "context": "observation"
+      }
+    ],
+    "1 Sawtooth attiré par les signaux": [
+      {
+        "id": "machine:sawtooth-wild",
+        "qty": 1,
+        "context": "attiré par les signaux"
+      }
+    ]
+  },
+  "vallee": {
+    "1 Watcher isolé": [
+      {
+        "id": "machine:watcher",
+        "qty": 1
+      }
+    ],
+    "2 Watchers nerveux": [
+      {
+        "id": "machine:watcher",
+        "qty": 2
+      }
+    ],
+    "1 Scrapper fouilleur": [
+      {
+        "id": "machine:scrapper-standard",
+        "qty": 1
+      }
+    ],
+    "1 loup gris": [
+      {
+        "id": "creature:loup-solitaire",
+        "qty": 1
+      }
+    ],
+    "1 sanglier territorial": [
+      {
+        "id": "creature:sanglier-territorial",
+        "qty": 1
+      }
+    ]
+  },
+  "gaia": {
+    "1 sanglier": [
+      {
+        "id": "creature:sanglier-territorial",
+        "qty": 1
+      }
+    ],
+    "1 lynx en embuscade": [
+      {
+        "id": "creature:lynx-felin-sauvage",
+        "qty": 1
+      }
+    ],
+    "1 ours brun": [
+      {
+        "id": "creature:ours-brun",
+        "qty": 1
+      }
+    ],
+    "1 Longleg": [
+      {
+        "id": "machine:longleg",
+        "qty": 1
+      }
+    ],
+    "1 nuée d’insectes charognards": [
+      {
+        "id": "creature:nuee-insectes",
+        "qty": 1
+      }
+    ],
+    "1 loup marqué par le Focus": [
+      {
+        "id": "creature:loup-focus-parasite",
+        "qty": 1
+      }
+    ]
+  },
+  "elysium": {
+    "1 Tisseur ELYS-9": [
+      {
+        "id": "machine:tisseur-elys9",
+        "qty": 1
+      }
+    ],
+    "2 Tisseurs ELYS-9": [
+      {
+        "id": "machine:tisseur-elys9",
+        "qty": 2
+      }
+    ],
+    "1 Récolteur ELYS-9": [
+      {
+        "id": "machine:recolteur-elys",
+        "qty": 1
+      }
+    ]
+  }
+}

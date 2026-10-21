@@ -1,0 +1,52 @@
+{
+  "machine:watcher": {
+    "xp": 15,
+    "source": "Vallée de la Dent d’Ambre — 1 Watcher isolé"
+  },
+  "machine:scrapper-standard": {
+    "xp": 40,
+    "source": "Gorges Brisées du Sud — 1 Scrapper fouillant une épave"
+  },
+  "machine:redeye-watcher": {
+    "xp": 40,
+    "source": "Gorges Brisées du Sud — 1 Redeye Watcher"
+  },
+  "machine:longleg": {
+    "xp": 80,
+    "source": "Gorges Brisées du Sud — 1 Longleg nerveux"
+  },
+  "machine:tisseur-elys9": {
+    "xp": 100,
+    "source": "Gorges Brisées du Sud — 1 Tisseur ELYS-9 en observation"
+  },
+  "machine:sawtooth-wild": {
+    "xp": 140,
+    "source": "Gorges Brisées du Sud — 1 Sawtooth attiré par les signaux (identification de variante à confirmer)",
+    "provisional": true
+  },
+  "creature:serpent-venimeux": {
+    "xp": 20,
+    "source": "Gorges Brisées du Sud — 1 serpent venimeux ou scorpion",
+    "provisional": true
+  },
+  "creature:sanglier-territorial": {
+    "xp": 35,
+    "source": "Forêt-Matrice de GAIA — 1 sanglier"
+  },
+  "creature:loup-solitaire": {
+    "xp": 35,
+    "source": "Vallée de la Dent d’Ambre — 1 loup gris"
+  },
+  "creature:lynx-felin-sauvage": {
+    "xp": 35,
+    "source": "Forêt-Matrice de GAIA — 1 lynx en embuscade"
+  },
+  "creature:ours-brun": {
+    "xp": 150,
+    "source": "Forêt-Matrice de GAIA — 1 ours brun"
+  },
+  "creature:nuee-insectes": {
+    "xp": 45,
+    "source": "Forêt-Matrice de GAIA — 1 nuée d’insectes charognards"
+  }
+}

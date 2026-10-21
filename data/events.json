@@ -1,0 +1,167 @@
+{
+  "gorges": [
+    {
+      "name": "Éboulement de corniche",
+      "description": "Des pierres se détachent au-dessus du passage. Le MJ fixe les DD et conséquences selon le terrain.",
+      "tags": [
+        "nature",
+        "terrain"
+      ],
+      "nearCauldron": false
+    },
+    {
+      "name": "Rafale de poussière",
+      "description": "Un courant violent soulève les poches de sable ; lignes de vue réduites et traces brouillées, selon arbitrage MJ.",
+      "tags": [
+        "nature",
+        "météo"
+      ]
+    },
+    {
+      "name": "Vibration mécanique",
+      "description": "Le sol résonne sous les pas de machines au loin. Indice sonore sans renfort obligatoire.",
+      "tags": [
+        "machine",
+        "ambiance"
+      ],
+      "nearCauldron": true
+    },
+    {
+      "name": "Passage rocheux instable",
+      "description": "Un ancien pont naturel menace de s’effondrer sous une forte charge.",
+      "tags": [
+        "terrain"
+      ]
+    }
+  ],
+  "vallee": [
+    {
+      "name": "Bêtes affolées",
+      "description": "Une fuite d’animaux traverse le sentier ; la cause reste à découvrir.",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "name": "Lueur Focus parasite",
+      "description": "Une brève interférence fait scintiller les Focus à proximité d’un passage.",
+      "tags": [
+        "signal"
+      ]
+    }
+  ],
+  "plaines": [
+    {
+      "name": "Nuage de poussière",
+      "description": "La visibilité diminue autour d’une piste de caravane.",
+      "tags": [
+        "nature",
+        "météo"
+      ]
+    },
+    {
+      "name": "Carcasse encombrante",
+      "description": "Un passage est obstrué par des débris métalliques instables.",
+      "tags": [
+        "terrain"
+      ]
+    }
+  ],
+  "gaia": [
+    {
+      "name": "Chute de branches",
+      "description": "Un choc lointain fait tomber du bois mort depuis la canopée.",
+      "tags": [
+        "nature"
+      ]
+    },
+    {
+      "name": "Pluie intense",
+      "description": "Le sol devient glissant et les bruits sont masqués.",
+      "tags": [
+        "météo"
+      ]
+    }
+  ],
+  "hades": [
+    {
+      "name": "Projection holographique instable",
+      "description": "Une archive visuelle perturbe la perception du passage.",
+      "tags": [
+        "anomalie"
+      ]
+    },
+    {
+      "name": "Structure fissurée",
+      "description": "Un plancher ancien cède progressivement.",
+      "tags": [
+        "terrain"
+      ]
+    }
+  ],
+  "hephaistos": [
+    {
+      "name": "Mirage solaire",
+      "description": "La chaleur déforme les repères à l’horizon.",
+      "tags": [
+        "météo"
+      ]
+    },
+    {
+      "name": "Tempête de sable",
+      "description": "Une bourrasque réduit la visibilité et complique la progression.",
+      "tags": [
+        "météo"
+      ]
+    }
+  ],
+  "titans": [
+    {
+      "name": "Poussière métallique",
+      "description": "Une chute de ferraille soulève un brouillard opaque.",
+      "tags": [
+        "nature",
+        "terrain"
+      ]
+    },
+    {
+      "name": "Interférences de carcasse",
+      "description": "Des signaux résiduels parasitent momentanément les Focus.",
+      "tags": [
+        "anomalie"
+      ]
+    }
+  ],
+  "elysium": [
+    {
+      "name": "Purge de couloir",
+      "description": "Une procédure automatique tente d’isoler un secteur ; pas de dégâts chiffrés sans règle.",
+      "tags": [
+        "installation"
+      ]
+    },
+    {
+      "name": "Lumière clinique défaillante",
+      "description": "L’éclairage se coupe puis revient irrégulièrement.",
+      "tags": [
+        "installation"
+      ]
+    }
+  ],
+  "heliosium": [
+    {
+      "name": "Silence anormal",
+      "description": "Un environnement trop parfait semble s’immobiliser quelques instants.",
+      "tags": [
+        "ambiance"
+      ]
+    },
+    {
+      "name": "Brume pure",
+      "description": "Une nappe de brume dissimule brièvement un cours d’eau.",
+      "tags": [
+        "météo"
+      ]
+    }
+  ]
+}
