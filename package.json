@@ -1,7 +1,7 @@
 {
   "name":"h0d-encounter-builder",
   "private":true,
-  "version":"0.1.1",
+  "version":"0.1.2",
   "type":"module",
   "description":"Module de rencontres Foundry VTT v14 pour la campagne JDR Zero Dawn",
   "scripts":{"test":"node --test tests/*.test.mjs","check":"node --check scripts/core.js && node --check scripts/integrations.js && node --check scripts/ui.js && node --check scripts/main.js"}

@@ -1,4 +1,4 @@
-# H0D Encounter Builder — v0.1.1 (correctif types de rencontres)
+# H0D Encounter Builder — v0.1.2 (catégories manuelles)
 
 Module Foundry VTT **v14** / **Custom System Builder 6.x** pour la campagne **JDR Zero Dawn**. Remplace la macro « table de rencontre » (qui reste indépendante tant que tu ne la supprimes pas).
 
@@ -7,7 +7,7 @@ Module Foundry VTT **v14** / **Custom System Builder 6.x** pour la campagne **JD
 ## Ce qui fonctionne dans cette première version
 
 - **RollTables** : lecture des tables du monde (prioritaires), ou des **7 exports** fournis en secours, sans importer ni modifier aucune table. Les doublons portant le même nom sont départagés par `flags.h0d.version` décroissant (Vallée V2 plutôt que V1).
-- **Mode manuel** : choix d'une machine, créature ou archétype de faction via l'API d'un builder actif, ajout de quantité, suppression. Les neuf membres du Conseil issus de `Faction Builder` sont également proposés si leurs données sont exposées.
+- **Mode manuel** : choix par catégorie **Machines / Faune / Factions**, puis par faction (noms dynamiques venant du Faction Builder), puis par profil et quantité. La composition reste intacte quand tu changes de catégorie. Les membres du Conseil sont regroupés avec la Dent d'Ambre lorsque leur profil est exposé.
 - **Mode « Composition proposée »** : composition basée sur les recettes de biome structurées et sur les **coûts individuels effectivement documentés**. Actuellement, les Gorges sont le biome pilote ; d'autres mappings partiels sont fournis.
 - **Calculs** : conservation du tableau des budgets XP de la macro d'origine, niveaux **1–10 seulement**, facteur défavorable facultatif **+25 %**, comparaison au plafond. Les niveaux 11–15 sont accessibles **sans plafond chiffré** en attendant un barème validé.
 - **PNJ** : les trois PJ sont fixes. Tu peux inscrire des alliés (combat / appui / non engagés) : ils sont affichés, **sans conversion automatique en PJ ni bonus XP inventé**.
@@ -93,3 +93,12 @@ Les tests contrôlent notamment la validation 2 Watchers + Scrapper = 70 XP, le 
 - Dans les Gorges, quand aucune ligne n'est mixte, une machine et une autre rencontre peuvent être assemblées sans dépasser le budget XP historique total.
 - Les ennemis non associés avec certitude à un profil des builders restent affichés en texte, sans XP individuel inventé.
 - Le mode manuel reste libre ; la suggestion de complément respecte le type choisi.
+
+## Ajout v0.1.2 — Sélection manuelle organisée
+
+1. Sous **Composition personnalisée**, choisir **Machines**, **Faune** ou **Factions**.
+2. Sous **Factions**, un second menu permet de sélectionner Dent d'Ambre, Caravanes Libres, Pillards Rouges, Culte du Renouveau, Héritiers du Soleil, HELIOS, ELYSIUM-9, ELYSIUM-10, HelioSium ou une future faction enregistrée dans le builder actif. Seules les factions dont au moins un profil est disponible apparaissent.
+3. Choisir le profil, la quantité et cliquer **Ajouter / verrouiller**. Changer de catégorie pour ajouter d'autres adversaires : les profils ajoutés restent dans la composition.
+4. Le filtre global **Type de rencontre** concerne les tirages et compositions proposées, pas le choix libre des adversaires manuels.
+
+Aucun coût XP ou Actor n'est inventé par cette nouvelle interface.

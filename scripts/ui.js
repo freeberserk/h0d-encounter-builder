@@ -1,5 +1,5 @@
 import {BIOMES,DIFFICULTIES,TYPES,norm,budgetFor,eligibleTableEntries,weightedChoice,mergeComposition,evaluateComposition,suggestComposition,proposeTableScenario,chance,biomeName} from './core.js';
-import {collectProfiles,getTableData,buildBiomePool,findRecipe,lootCandidates,resolveLoot,integrationStatus} from './integrations.js';
+import {collectProfiles,getTableData,buildBiomePool,findRecipe,lootCandidates,resolveLoot,integrationStatus,MANUAL_CATEGORIES,factionChoices,manualChoices} from './integrations.js';
 const MID='h0d-encounter-builder';
 const escapeHTML=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const esc=escapeHTML;
@@ -28,7 +28,7 @@ const messageHTML = result => {
 export class EncounterUI {
   constructor(data){this.data=data;this.registry=collectProfiles();this.costs=data.costs;this.state={
     biome:'gorges',level:3,difficulty:'standard',type:'tous',unfavorable:false,nearCauldron:false,
-    mode:'table',profileId:'',qty:1,allyId:'',allyQty:1,allyRole:'combat',members:[],allies:[],
+    mode:'table',manualCategory:'machine',manualFaction:'',profileId:'',qty:1,allyId:'',allyQty:1,allyRole:'combat',members:[],allies:[],
     eventChance:30,discoveryChance:20,discoverySource:'machine',selectedSave:'',sceneTitle:'',last:null
   };this.dialog=null;}
   open(){
@@ -47,8 +47,23 @@ export class EncounterUI {
   optionProfiles(excludeSource=''){
     return [...this.registry.values()].filter(x=>x.source!==excludeSource).sort((a,b)=>a.label.localeCompare(b.label,'fr')).map(x=>[x.id,`${x.label} · M${x.threat} · ${x.source}`]);
   }
+  manualProfiles(){
+    return manualChoices(this.registry,this.state.manualCategory,this.state.manualFaction).map(profile=>[profile.id,`${profile.label} · M${profile.threat}`]);
+  }
+  updateManualSelectors(html){
+    const s=this.state, groups=factionChoices(this.registry);
+    const isFaction=s.manualCategory==='faction';
+    if(!isFaction||!groups.some(([key])=>key===s.manualFaction))s.manualFaction='';
+    html.find('[data-region="manual-faction"]').toggle(isFaction);
+    html.find('[data-region="manual-group-row"]').toggleClass('h0d-row-2',isFaction);
+    html.find('[data-key="manualFaction"]').html(opt([['','— Choisir une faction —'],...groups],s.manualFaction));
+    const profiles=this.manualProfiles();
+    if(!profiles.some(([id])=>id===s.profileId))s.profileId='';
+    const placeholder=isFaction&&!s.manualFaction?'— Choisir une faction d’abord —':'— Choisir un profil —';
+    html.find('[data-key="profileId"]').html(opt([['',placeholder],...profiles],s.profileId));
+  }
   template(){
-    const s=this.state;const valid=this.optionProfiles();
+    const s=this.state;const valid=this.optionProfiles();const groups=factionChoices(this.registry);
     const status=integrationStatus();
     const integrations=Object.entries(status).map(([key,ok])=>`<span class="h0d-chip ${ok?'on':'off'}">${esc(key)} ${ok?'✓':'–'}</span>`).join('');
     return `<section class="h0d-encounter-wrap">
@@ -67,10 +82,15 @@ export class EncounterUI {
       <label class="h0d-toggle"><input data-key="nearCauldron" type="checkbox" ${s.nearCauldron?'checked':''}/> À proximité d’un Creuset (privilégier les machines dans la composition proposée ; pas de bonus XP automatique)</label>
       <div class="h0d-card h0d-manual">
         <h3>Composition personnalisée / adversaires imposés</h3>
+        <div class="h0d-field-row ${s.manualCategory==='faction'?'h0d-row-2':''}" data-region="manual-group-row">
+          <label>Catégorie <select data-key="manualCategory">${opt(MANUAL_CATEGORIES,s.manualCategory)}</select></label>
+          <label data-region="manual-faction" style="${s.manualCategory==='faction'?'':'display:none'}">Faction <select data-key="manualFaction">${opt([['','— Choisir une faction —'],...groups],s.manualFaction)}</select></label>
+        </div>
         <div class="h0d-field-row h0d-row-2">
-          <label>Profil dans les builders <select data-key="profileId">${opt([['','— Choisir —'],...valid],s.profileId)}</select></label>
+          <label>Profil <select data-key="profileId">${opt([['','— Choisir un profil —'],...this.manualProfiles()],s.profileId)}</select></label>
           <label>Quantité <input data-key="qty" type="number" value="${s.qty}" min="1" max="50"/></label>
         </div>
+        <small>Filtre de sélection manuel indépendant du type de rencontre. Les factions proviennent du Faction Builder actif.</small>
         <div class="h0d-buttons"><button type="button" data-action="add">Ajouter / verrouiller</button><button type="button" data-action="fill">Proposer un complément</button><button type="button" data-action="clear">Vider</button></div>
         <div data-region="composition" class="h0d-composition"></div>
       </div>
@@ -111,10 +131,21 @@ export class EncounterUI {
     const s=this.state;
     const update=el=>{const key=el.dataset.key;if(!key)return;let v=el.type==='checkbox'?el.checked:el.value;if(['qty','allyQty','level','eventChance','discoveryChance'].includes(key))v=Number(v);s[key]=v;};
     html.on('change input','[data-key]',e=>update(e.currentTarget));
+    html.on('change','[data-key="manualCategory"]',e=>{
+      s.manualCategory=e.currentTarget.value;
+      s.manualFaction='';s.profileId='';
+      this.updateManualSelectors(html);
+    });
+    html.on('change','[data-key="manualFaction"]',e=>{
+      s.manualFaction=e.currentTarget.value;
+      s.profileId='';
+      this.updateManualSelectors(html);
+    });
     html.on('click','[data-action]',async e=>{
       e.preventDefault();const action=e.currentTarget.dataset.action;this.clickedId=e.currentTarget.dataset.id??null;
       try{await this.action(action,html)}catch(error){console.error(MID,error);ui.notifications.error(`Encounter Builder : ${error.message}`);}
     });
+    this.updateManualSelectors(html);
     this.paint(html);
   }
   paint(html){
@@ -178,7 +209,8 @@ export class EncounterUI {
   async action(action,html){
     const s=this.state;
     if(action==='add'){
-      if(!this.registry.has(s.profileId))throw new Error('Choisis un profil présent dans un builder actif.');
+      if(!this.registry.has(s.profileId)||!this.manualProfiles().some(([id])=>id===s.profileId))
+        throw new Error('Choisis un profil appartenant à la catégorie et à la faction sélectionnées.');
       if(!Number.isInteger(s.qty)||s.qty<1||s.qty>50)throw new Error('Quantité invalide (1–50).');
       s.members=mergeComposition([...s.members,{id:s.profileId,qty:s.qty}]);this.paint(html);return;
     }

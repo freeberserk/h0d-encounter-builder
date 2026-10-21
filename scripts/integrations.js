@@ -14,6 +14,24 @@ export function integrationStatus(){
     loot:!!sourceApi('h0d-loot','h0dLoot')
   };
 }
+export const MANUAL_CATEGORIES=Object.freeze([['machine','Machines'],['creature','Faune'],['faction','Factions']]);
+export const UNCLASSIFIED_FACTION='__sans-faction__';
+/** La liste des factions provient exclusivement des profils visibles du Faction Builder. */
+export function factionChoices(registry){
+  const names=new Map();
+  for(const profile of (registry?.values?.()??[])){
+    if(profile.source!=='faction')continue;
+    const key=String(profile.faction??'').trim()||UNCLASSIFIED_FACTION;
+    const label=String(profile.factionLabel??'').trim()||(key===UNCLASSIFIED_FACTION?'Sans faction':key.replace(/-/g,' '));
+    if(!names.has(key))names.set(key,label);
+  }
+  return [...names.entries()].sort((a,b)=>a[1].localeCompare(b[1],'fr'));
+}
+export function manualChoices(registry,category='machine',faction=''){
+  return [...(registry?.values?.()??[])].filter(p=>
+    p.source===category&&(category!=='faction'||(faction!==''&&(String(p.faction??'').trim()||UNCLASSIFIED_FACTION)===faction))
+  ).sort((a,b)=>a.label.localeCompare(b.label,'fr'));
+}
 export function collectProfiles(){
   const registry=new Map();
   const machine=sourceApi('h0d-machine-builder','h0dMachineBuilder');
@@ -25,14 +43,16 @@ export function collectProfiles(){
     registry.set('creature:'+key,{id:'creature:'+key,label:value.label??key,source:'creature',threat:Number(value.actor?.props?.H0D_Creature_Menace??0),role:value.actor?.props?.H0D_Creature_Role??'',originalKey:key});
   }
   const factions=sourceApi('h0d-faction-builder','h0dFactionBuilder');
+  const names=new Map(readMap(factions?.factions).map(([key,value])=>[key,value?.label??key]));
+  const factionLabel=key=>names.get(key)??String(key??'').replace(/-/g,' ');
   for(const [key,value] of readMap(factions?.archetypes)){
-    registry.set('faction:'+key,{id:'faction:'+key,label:value.label??key,source:'faction',threat:Number(value.actor?.props?.H0D_Creature_Menace??0),role:value.actor?.props?.H0D_Creature_Role??'',faction:value.factionKey??'',originalKey:key});
+    registry.set('faction:'+key,{id:'faction:'+key,label:value.label??key,source:'faction',threat:Number(value.actor?.props?.H0D_Creature_Menace??0),role:value.actor?.props?.H0D_Creature_Role??'',faction:value.factionKey??'',factionLabel:factionLabel(value.factionKey),originalKey:key});
   }
   for(const [key,value] of readMap(factions?.council?.entries)){
     registry.set('faction:council-'+key,{
       id:'faction:council-'+key,label:value.name??key,source:'faction',
       threat:Number(value.actor?.props?.H0D_Creature_Menace??0),
-      role:value.role??'',faction:'dent-ambre',originalKey:key,unique:true
+      role:value.role??'',faction:'dent-ambre',factionLabel:factionLabel('dent-ambre'),originalKey:key,unique:true
     });
   }
   return registry;

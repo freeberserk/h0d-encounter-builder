@@ -2,7 +2,7 @@ import {EncounterUI} from './ui.js';
 import {collectProfiles,integrationStatus,getTableData,buildBiomePool} from './integrations.js';
 import {evaluateComposition,suggestComposition,budgetFor,eligibleTableEntries,weightedChoice,BIOMES} from './core.js';
 const ID='h0d-encounter-builder';
-const VERSION='0.1.1';
+const VERSION='0.1.2';
 const data={seedTables:{},seedLoot:{},recipes:{},events:{},costs:{}};
 let uiInstance=null;
 async function loadData(){
