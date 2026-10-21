@@ -1,4 +1,4 @@
-import {BIOMES,DIFFICULTIES,TYPES,norm,budgetFor,eligibleTableEntries,weightedChoice,mergeComposition,evaluateComposition,suggestComposition,chance,biomeName} from './core.js';
+import {BIOMES,DIFFICULTIES,TYPES,norm,budgetFor,eligibleTableEntries,weightedChoice,mergeComposition,evaluateComposition,suggestComposition,proposeTableScenario,chance,biomeName} from './core.js';
 import {collectProfiles,getTableData,buildBiomePool,findRecipe,lootCandidates,resolveLoot,integrationStatus} from './integrations.js';
 const MID='h0d-encounter-builder';
 const escapeHTML=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -13,9 +13,11 @@ const messageHTML = result => {
     <p><b>Biome :</b> ${esc(biomeName(result.biome))} · <b>Niveau :</b> ${result.level} · <b>Difficulté :</b> ${esc(DIFFICULTIES[result.difficulty]??result.difficulty)} · <b>3 PJ fixes</b></p>
     <p><b>Budget historique :</b> ${fmt(result.budget)}</p>
     ${result.description?`<p><b>Situation :</b> ${esc(result.description)}</p>`:''}
-    ${rows?`<p><b>Composition à préparer :</b></p><ul>${rows}</ul>`:`<p><b>Composition :</b> ${result.mode==='table'&&!result.knownEmptyRecipe?'Non associée à un profil : utiliser la description.':'Aucun adversaire (scène hors combat possible).'}</p>`}
-    ${result.eval?`<p><b>Menace cumulée indicative :</b> ${result.eval.lines.reduce((a,b)=>a+(Number(b.threat??0)*b.qty),0)} · <b>Coût connu :</b> ${fmt(result.eval.effectiveKnownXP)} ${result.eval.complete?'(calcul complet)':'(partiel / non validé)'} · <b>Budget :</b> ${result.eval.withinBudget===null?'non certifié':result.eval.withinBudget?'respecté':'dépassé'}</p>`:''}
-    ${result.tableXP!==undefined&&result.tableXP!==null?`<p><b>Coût de la RollTable :</b> ${result.tableXPMin!==result.tableXPMax?`${result.tableXPMin}–${result.tableXPMax}`:result.tableXP} XP (historique)</p>`:''}
+    ${rows?`<p><b>Profils identifiés à préparer :</b></p><ul>${rows}</ul>`:''}
+    ${result.unlinkedDescriptions?.length?`<p><b>Autres adversaires mentionnés dans les tables (profil non associé) :</b></p><ul>${result.unlinkedDescriptions.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}
+    ${!rows&&!result.unlinkedDescriptions?.length?'<p><b>Composition :</b> Aucun adversaire (scène hors combat ou événement narratif).</p>':''}
+    ${result.eval?`<p><b>Menace cumulée des profils identifiés :</b> ${result.eval.lines.reduce((a,b)=>a+(Number(b.threat??0)*b.qty),0)} · <b>Coût des profils identifiés :</b> ${fmt(result.eval.effectiveKnownXP)} ${result.eval.complete?'(calcul complet)':'(partiel / non validé)'} · <b>Budget :</b> ${result.eval.withinBudget===null?'non certifié':result.eval.withinBudget?'respecté':'dépassé'}</p>`:''}
+    ${result.tableXP!==undefined&&result.tableXP!==null?`<p><b>Coût historique des situations sélectionnées :</b> ${result.tableXPMin!==result.tableXPMax?`${result.tableXPMin}–${result.tableXPMax}`:result.tableXP} XP (historique)</p>`:''}
     ${result.event?`<p><b>Événement indépendant :</b> ${esc(result.event.name)} — ${esc(result.event.description)} <em>(coût et DD à arbitrer)</em></p>`:''}
     ${result.discovery?`<p><b>Découverte possible :</b> ${esc(result.discovery.label)} · ${esc(result.discovery.source??'Catalogue')} <em>(suggestion, pas d’attribution automatique)</em></p>`:''}
     ${result.allies.length?`<p><b>Alliés :</b> ${result.allies.map(a=>`${a.qty} × ${esc(a.label)} (${esc(a.role)})`).join(', ')} — non comptés comme PJ supplémentaires.</p>`:''}
@@ -59,7 +61,7 @@ export class EncounterUI {
       </div>
       <div class="h0d-field-row h0d-row-3">
         <label>Difficulté <select data-key="difficulty">${opt(Object.entries(DIFFICULTIES),s.difficulty)}</select></label>
-        <label>Type (RollTable) <select data-key="type">${opt(Object.entries(TYPES),s.type)}</select></label>
+        <label>Type de rencontre (tirage et proposition) <select data-key="type">${opt(Object.entries(TYPES),s.type)}</select></label>
         <label><span class="h0d-label">Facteur défavorable</span><input data-key="unfavorable" type="checkbox" ${s.unfavorable?'checked':''}/> +25 % XP (macro historique)</label>
       </div>
       <label class="h0d-toggle"><input data-key="nearCauldron" type="checkbox" ${s.nearCauldron?'checked':''}/> À proximité d’un Creuset (privilégier les machines dans la composition proposée ; pas de bonus XP automatique)</label>
@@ -133,18 +135,45 @@ export class EncounterUI {
     const discovery=chance(s.discoveryChance)?resolveLoot(weightedChoice(candidates)):null;
     return {event,discovery};
   }
-  createResult({description='',mode,entries=[],tableEntry=null,extra=true,extraWarnings=[]}={}){
-    const s=this.state, evalResult=evaluateComposition(entries,this.registry,this.costs,{level:s.level,difficulty:s.difficulty,unfavorable:s.unfavorable,allies:s.allies});
+  createResult({description='',mode,entries=[],tableEntries=[],extra=true,extraWarnings=[]}={}){
+    const s=this.state;
+    const sourceRows=tableEntries;
+    const missingRows=sourceRows.filter(row=>row.type!=='hors-combat'&&!Array.isArray(findRecipe(s.biome,row.description,this.data.recipes)));
+    const unlinkedDescriptions=missingRows.map(row=>row.description);
+    const evaluated=evaluateComposition(entries,this.registry,this.costs,{level:s.level,difficulty:s.difficulty,unfavorable:s.unfavorable,allies:s.allies});
+    const evalResult=entries.length?{...evaluated,
+      complete:evaluated.complete&&!missingRows.length,
+      withinBudget:missingRows.length?null:evaluated.withinBudget,
+      totalXP:missingRows.length?null:evaluated.totalXP}:null;
     const additions=extra?this.extra():{event:s.last?.event??null,discovery:s.last?.discovery??null};
     const warnings=[...extraWarnings];
-    if(mode==='table' && !findRecipe(s.biome,description,this.data.recipes)) warnings.push('Composition non reliée de façon fiable aux builders. Utiliser la description originale, sans inventer un profil.');
-    if(mode==='table' && tableEntry?.xpMax===null)warnings.push('XP non renseignés dans la table source.');
-    if(mode==='table' && tableEntry?.xpMax!==null && tableEntry?.xpMax!==undefined && !entries.length && tableEntry.type!=='hors-combat')warnings.push('Rencontre historique non structurée : coût XP de la RollTable uniquement.');
-    if(mode==='table' && entries.length && evalResult.complete && tableEntry.xp!==evalResult.baseKnownXP)warnings.push(`Écart entre la RollTable (${tableEntry.xp} XP) et les coûts unitaires documentés (${evalResult.baseKnownXP} XP). À examiner.`);
-    if(mode==='table' && tableEntry)warnings.push('Le coût de la RollTable est une donnée historique, pas une validation automatique pour 3 PJ.');
-    const recipe=mode==='table'?findRecipe(s.biome,description,this.data.recipes):null;
-    const result={title:s.sceneTitle||'Rencontre proposée',mode,biome:s.biome,level:s.level,difficulty:s.difficulty,budget:budgetFor(s.level,s.difficulty),description,entries:mergeComposition(entries),knownEmptyRecipe:Array.isArray(recipe)&&recipe.length===0,eval:entries.length?evalResult:null,tableXP:tableEntry?.xp,tableXPMin:tableEntry?.xpMin,tableXPMax:tableEntry?.xpMax,allies:[...s.allies],warnings:[...warnings,...(entries.length?evalResult.warnings:[])],...additions};
+    if(missingRows.length)warnings.push(`${missingRows.length} situation(s) sans correspondance de profil validée : consulter le texte original et sélectionner les Actors manuellement ; validation XP globale impossible.`);
+    if(sourceRows.length){
+      if(sourceRows.some(r=>r.xpMax===null))warnings.push('XP non renseignés dans une table source.');
+      warnings.push('XP des RollTables = valeurs historiques, non recalibrées pour trois PJ.');
+    }
+    const hasHistorical=sourceRows.length>0&&sourceRows.every(r=>r.xp!==null&&r.xpMin!==null&&r.xpMax!==null);
+    const result={title:s.sceneTitle||'Rencontre proposée',mode,biome:s.biome,level:s.level,difficulty:s.difficulty,
+      budget:budgetFor(s.level,s.difficulty),description,entries:mergeComposition(entries),unlinkedDescriptions,
+      eval:evalResult,
+      tableXP:hasHistorical?sourceRows.reduce((sum,r)=>sum+r.xp,0):null,
+      tableXPMin:hasHistorical?sourceRows.reduce((sum,r)=>sum+r.xpMin,0):null,
+      tableXPMax:hasHistorical?sourceRows.reduce((sum,r)=>sum+r.xpMax,0):null,
+      allies:[...s.allies],warnings:[...warnings,...(evalResult?evalResult.warnings:[])],...additions};
     s.last=result;return result;
+  }
+  resultFromTableRows(rows,mode,origin,assembled=false){
+    const s=this.state;
+    const entries=[];
+    for(const row of rows){
+      const recipe=findRecipe(s.biome,row.description,this.data.recipes);
+      if(Array.isArray(recipe))entries.push(...recipe);
+    }
+    this.createResult({mode,entries,
+      description:rows.map(r=>r.description).join(assembled?' + ':' ; '),
+      tableEntries:rows,
+      extraWarnings:[`Source de la table : ${origin==='foundry'?'monde Foundry':'export embarqué'}.`,
+        ...(assembled?['Composition mixte obtenue en associant deux situations existantes ; XP historiques additionnés, aucune fiche inventée.']:[])]});
   }
   async action(action,html){
     const s=this.state;
@@ -167,27 +196,22 @@ export class EncounterUI {
     }
     if(action==='clearAllies'){s.allies=[];this.paint(html);return;}
     if(action==='fill'){
-      const suggestion=suggestComposition(s.members,buildBiomePool(s.biome,this.data.recipes),this.registry,this.costs,{level:s.level,difficulty:s.difficulty,unfavorable:s.unfavorable,nearCauldron:s.nearCauldron});
+      const suggestion=suggestComposition(s.members,buildBiomePool(s.biome,this.data.recipes),this.registry,this.costs,{level:s.level,difficulty:s.difficulty,unfavorable:s.unfavorable,nearCauldron:s.nearCauldron,type:s.type});
       s.members=suggestion.composition;
       this.createResult({mode:'manuel',entries:s.members,description:'Composition proposée en conservant les adversaires imposés.',extraWarnings:[suggestion.reason]});
       this.paint(html);return;
     }
     if(action==='generate'){
       if(!Number.isInteger(s.level)||s.level<1||s.level>15)throw new Error('Niveau attendu de 1 à 15.');
-      if(s.mode==='table'){
+      if(s.mode==='table'||s.mode==='auto'){
         const table=getTableData(s.biome,this.data.seedTables);
-        const available=eligibleTableEntries(table.results,{level:s.level,difficulty:s.difficulty,type:s.type,unfavorable:s.unfavorable});
-        if(!available.length)throw new Error(`Aucun résultat compatible pour ce biome/type/budget. Table ${table.origin}. Aucun dépassement automatique.`);
-        const weighted=available.map(e=>({...e,weight:e.weight*(s.nearCauldron&&(e.type==='machine'||e.type==='mixte')?2:1)}));
-        const entry=weightedChoice(weighted);
-        const recipe=findRecipe(s.biome,entry.description,this.data.recipes);
-        const entries=Array.isArray(recipe)?recipe:[];
-        this.createResult({mode:'table',entries,description:entry.description,tableEntry:entry,extraWarnings:[`Source de la table : ${table.origin==='foundry'?'monde Foundry': 'export embarqué'}.`]});
-      }else if(s.mode==='auto'){
-        const suggestion=suggestComposition([],buildBiomePool(s.biome,this.data.recipes),this.registry,this.costs,{level:s.level,difficulty:s.difficulty,unfavorable:s.unfavorable,nearCauldron:s.nearCauldron});
-        if(!suggestion.composition.length)throw new Error(suggestion.reason+' Le mode RollTable ou le mode manuel reste possible.');
-        s.members=suggestion.composition;
-        this.createResult({mode:'auto',entries:s.members,description:'Composition réalisée depuis les profils documentés du biome.',extraWarnings:[suggestion.reason]});
+        const scenario=proposeTableScenario(table.results,{
+          level:s.level,difficulty:s.difficulty,type:s.type,
+          unfavorable:s.unfavorable,nearCauldron:s.nearCauldron
+        });
+        if(!scenario)throw new Error(`Aucune rencontre de type « ${TYPES[s.type]??s.type} » dans ce biome pour ce budget. Aucune machine ajoutée en remplacement.`);
+        this.resultFromTableRows(scenario.entries,s.mode,table.origin,scenario.assembled);
+        if(s.mode==='auto')s.members=mergeComposition(s.last.entries);
       }else{
         this.createResult({mode:'manuel',entries:s.members,description:'Rencontre composée librement par le MJ.'});
       }

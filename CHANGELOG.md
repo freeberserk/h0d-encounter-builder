@@ -1,12 +1,13 @@
-# Historique
+# Changements H0D Encounter Builder
 
-## v0.1.0 — Premier jet (2026-10-20)
-- Conversion de la macro en module Foundry VTT v14.
-- Mode RollTable avec filtres stricts par biome, niveau, difficulté et type.
-- Mode composition manuelle avec profils issus des Machine, Creature et Faction Builders.
-- Composition automatique limitée aux profils reliés et dotés de coûts unitaires documentés.
-- PNJ alliés en contexte : descriptifs, sans conversion numérique arbitraire.
-- Événements indépendants et découvertes issues des tables H0D Loot / du catalogue Equipment Builder.
-- Sept tables d12 officielles embarquées en lecture seule ; deux biomes en attente d'export.
-- Sauvegarde de compositions dans les paramètres du monde, chat privé MJ.
-- Aucune création ni modification d'Actor, de Token ou de RollTable.
+## v0.1.1 — Correctif des types de rencontres
+
+- Lire `flags.h0d.typeRencontre` pour les résultats Foundry de format `text`.
+- Filtrer correctement Machines, Autres, Hors combat et Mixte dans les propositions.
+- Composer une proposition mixte à partir de deux lignes documentées du biome si aucune ligne Mixte n'existe.
+- Afficher les adversaires non associés à une fiche, avec avertissement sur la validation XP.
+- Respecter le type sélectionné lors d'une suggestion de complément manuel.
+
+## v0.1.0
+
+Premier jet : intégrations des catalogues, 7 tables embarquées, composition manuelle, événements, ressources et sauvegardes.

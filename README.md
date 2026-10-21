@@ -1,4 +1,4 @@
-# H0D Encounter Builder — v0.1.0 (premier jet)
+# H0D Encounter Builder — v0.1.1 (correctif types de rencontres)
 
 Module Foundry VTT **v14** / **Custom System Builder 6.x** pour la campagne **JDR Zero Dawn**. Remplace la macro « table de rencontre » (qui reste indépendante tant que tu ne la supprimes pas).
 
@@ -85,3 +85,11 @@ npm run check
 ```
 
 Les tests contrôlent notamment la validation 2 Watchers + Scrapper = 70 XP, le respect strict des plafonds, les coûts inconnus, la distinction scène hors combat et la sélection des tableaux.
+
+## Correctif v0.1.1
+
+- Les catégories Foundry sont désormais lues dans `flags.h0d.typeRencontre`, pas dans `RollTableResult.type` (qui vaut `text`).
+- « Autres attaquants » et « Mixte » sont respectés dans le tirage **et** la composition proposée.
+- Dans les Gorges, quand aucune ligne n'est mixte, une machine et une autre rencontre peuvent être assemblées sans dépasser le budget XP historique total.
+- Les ennemis non associés avec certitude à un profil des builders restent affichés en texte, sans XP individuel inventé.
+- Le mode manuel reste libre ; la suggestion de complément respecte le type choisi.

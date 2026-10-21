@@ -37,7 +37,8 @@ export function normalizeEntry(raw) {
   return {
     id:String(raw.id??raw._id??''),
     description:String(raw.description??raw.text??raw.name??''),
-    type:String(raw.type??flags.typeRencontre??'inconnu'),
+    // Dans Foundry, raw.type='text' désigne le format du résultat, pas le type de rencontre.
+    type:String(flags.typeRencontre??(TYPES[raw.type]?raw.type:'inconnu')),
     weight:Number(raw.weight??1),
     xp:Number.isFinite(Number(xp))&&xp!==undefined&&xp!==null?Number(xp):null,
     xpMin:Number.isFinite(Number(xpMin))&&xpMin!==undefined&&xpMin!==null?Number(xpMin):null,
@@ -62,6 +63,32 @@ export function eligibleTableEntries(entries,{level,difficulty,type='tous',unfav
     if(budget===null)return true; // Niveaux 11-15 : pas de barème validé, affichage averti
     return Math.ceil(e.xpMax*(unfavorable?1.25:1))<=budget;
   });
+}
+/** 
+ * Tirage par type depuis les RollTables, avec combinaison de deux lignes
+ * documentées (machine + autre) si aucune ligne mixte n'existe.
+ */
+export function proposeTableScenario(entries, options={}, rng=Math.random){
+  const type=options.type??'tous';
+  const valid=eligibleTableEntries(entries,{...options,type:'tous'});
+  const matching=valid.filter(e=>type==='tous'||e.type===type);
+  if(matching.length){
+    const weighted=matching.map(e=>({...e,weight:e.weight*(options.nearCauldron&&e.type==='machine'?2:1)}));
+    const picked=weightedChoice(weighted,rng);
+    return picked?{entries:[picked],assembled:false}:null;
+  }
+  if(type!=='mixte')return null;
+  const machines=valid.filter(e=>e.type==='machine'&&e.xpMax!==null);
+  const others=valid.filter(e=>e.type==='autre'&&e.xpMax!==null);
+  const budget=budgetFor(options.level,options.difficulty);
+  const factor=options.unfavorable?1.25:1;
+  const pairs=[];
+  for(const machine of machines)for(const other of others){
+    if(budget!==null&&Math.ceil((machine.xpMax+other.xpMax)*factor)>budget)continue;
+    pairs.push({machine,other,weight:machine.weight*other.weight});
+  }
+  const choice=weightedChoice(pairs,rng);
+  return choice?{entries:[choice.machine,choice.other],assembled:true}:null;
 }
 export function mergeComposition(entries=[]) {
   const map=new Map();
@@ -107,6 +134,15 @@ export function suggestComposition(current, pool, registry, costs,opts={},rng=Ma
   let composition=mergeComposition(current),check=evaluateComposition(composition,registry,costs,opts);
   if(!check.complete && composition.length)return {composition,reason:'Le coût d’au moins un adversaire imposé est inconnu ou provisoire.'};
   let available=pool.filter(p=>registry.has(p.id)&&costs[p.id]&&Number.isFinite(costs[p.id].xp)&&!costs[p.id].provisional&&costs[p.id].xp>0);
+  if(opts.type==='machine')available=available.filter(p=>registry.get(p.id)?.source==='machine');
+  if(opts.type==='autre')available=available.filter(p=>['creature','faction'].includes(registry.get(p.id)?.source));
+  if(opts.type==='hors-combat')return {composition,reason:'Un événement hors combat se tire dans le mode RollTable / Composition proposée.'};
+  if(opts.type==='mixte'){
+    const hasMachine=composition.some(p=>registry.get(p.id)?.source==='machine');
+    const hasOther=composition.some(p=>['creature','faction'].includes(registry.get(p.id)?.source));
+    if(!hasOther)available=available.filter(p=>['creature','faction'].includes(registry.get(p.id)?.source));
+    else if(!hasMachine)available=available.filter(p=>registry.get(p.id)?.source==='machine');
+  }
   const maxCount=Math.max(1,Math.min(8,Number(opts.maxCount??5)));
   while(composition.reduce((s,e)=>s+e.qty,0)<maxCount){
     const already=composition.reduce((s,e)=>s+(costs[e.id]?.xp??0)*e.qty,0);
@@ -118,6 +154,9 @@ export function suggestComposition(current, pool, registry, costs,opts={},rng=Ma
     if(!chosen)break;
     composition=mergeComposition([...composition,{id:chosen.id,qty:1}]);
   }
-  return {composition,reason:composition.length?'Composition proposée selon les coûts documentés.':'Aucun profil tarifé disponible pour ce biome.'};
+  const hasMachine=composition.some(p=>registry.get(p.id)?.source==='machine');
+  const hasOther=composition.some(p=>['creature','faction'].includes(registry.get(p.id)?.source));
+  const notMixed=opts.type==='mixte'&&!(hasMachine&&hasOther);
+  return {composition,reason:notMixed?'Composition mixte incomplète : aucun profil adéquat avec XP individuel validé dans les recettes du biome. Utilise les RollTables pour une proposition mixte textuelle.':composition.length?'Composition proposée selon les coûts documentés.':'Aucun profil tarifé disponible pour ce biome.'};
 }
 export function chance(probability,rng=Math.random){return Number(rng()) < Math.max(0,Math.min(1,Number(probability)/100));}
