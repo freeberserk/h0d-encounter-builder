@@ -1,8 +1,9 @@
 import {EncounterUI} from './ui.js';
 import {collectProfiles,integrationStatus,getTableData,buildBiomePool} from './integrations.js';
 import {evaluateComposition,suggestComposition,budgetFor,eligibleTableEntries,weightedChoice,BIOMES} from './core.js';
+import {ensureDiscoveryTable,findDiscoveryTable,discoverySources} from './discoveries.js';
 const ID='h0d-encounter-builder';
-const VERSION='0.1.2';
+const VERSION='0.1.3';
 const data={seedTables:{},seedLoot:{},recipes:{},events:{},costs:{}};
 let uiInstance=null;
 async function loadData(){
@@ -31,10 +32,17 @@ Hooks.once('init',()=>{
 });
 Hooks.once('ready',async()=>{
   await loadData();
+  if(game.user?.isGM){
+    try{await ensureDiscoveryTable()}
+    catch(e){console.warn(ID+' | Création de la table des découvertes impossible :',e);ui.notifications?.warn?.('Encounter Builder : création automatique de la table des découvertes impossible.');}
+  }
   const api={
     version:VERSION,open,
     profiles:()=>collectProfiles(),
     status:integrationStatus,
+    discoveryTable:findDiscoveryTable,
+    discoverySources:()=>discoverySources(findDiscoveryTable()),
+    ensureDiscoveryTable,
     biomes:BIOMES,
     getTable:biome=>getTableData(biome,data.seedTables),
     getPool:biome=>buildBiomePool(biome,data.recipes),

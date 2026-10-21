@@ -1,10 +1,18 @@
 import {BIOMES,DIFFICULTIES,TYPES,norm,budgetFor,eligibleTableEntries,weightedChoice,mergeComposition,evaluateComposition,suggestComposition,proposeTableScenario,chance,biomeName} from './core.js';
 import {collectProfiles,getTableData,buildBiomePool,findRecipe,lootCandidates,resolveLoot,integrationStatus,MANUAL_CATEGORIES,factionChoices,manualChoices} from './integrations.js';
+import {findDiscoveryTable,chooseDiscoverySource,ensureDiscoveryTable,DISCOVERY_TABLE_NAME,DISCOVERY_SOURCE_LABELS} from './discoveries.js';
 const MID='h0d-encounter-builder';
 const escapeHTML=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const esc=escapeHTML;
 const opt=(list,current)=>list.map(([key,name])=>`<option value="${esc(key)}" ${String(key)===String(current)?'selected':''}>${esc(name)}</option>`).join('');
 const fmt=n=>n===null?'non chiffré':`${n} XP`;
+const budgetLabel=e=>({
+  empty:'Aucune composition à vérifier',
+  'no-budget':'Plafond XP non défini au-delà du niveau 10',
+  over:'Budget dépassé (dépassement certain)',
+  incomplete:'Calcul incomplet : XP manquants ou provisoires',
+  within:'Budget historique respecté'
+}[e.budgetState]??'Évaluation indisponible');
 const messageHTML = result => {
   const rows=(result.eval?.lines??[]).map(line=>`<li>${line.qty} × <strong>${esc(line.label)}</strong> · Menace ${line.threat??'?'} · ${line.subtotal===null?'XP inconnu':`${line.subtotal} XP`} ${line.missing?'<em>(profil absent)</em>':''}${line.reference?`<small> · Source : ${esc(line.reference)}</small>`:''}</li>`).join('');
   const warnings=(result.warnings??[]).map(t=>`<li>${esc(t)}</li>`).join('');
@@ -16,10 +24,10 @@ const messageHTML = result => {
     ${rows?`<p><b>Profils identifiés à préparer :</b></p><ul>${rows}</ul>`:''}
     ${result.unlinkedDescriptions?.length?`<p><b>Autres adversaires mentionnés dans les tables (profil non associé) :</b></p><ul>${result.unlinkedDescriptions.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}
     ${!rows&&!result.unlinkedDescriptions?.length?'<p><b>Composition :</b> Aucun adversaire (scène hors combat ou événement narratif).</p>':''}
-    ${result.eval?`<p><b>Menace cumulée des profils identifiés :</b> ${result.eval.lines.reduce((a,b)=>a+(Number(b.threat??0)*b.qty),0)} · <b>Coût des profils identifiés :</b> ${fmt(result.eval.effectiveKnownXP)} ${result.eval.complete?'(calcul complet)':'(partiel / non validé)'} · <b>Budget :</b> ${result.eval.withinBudget===null?'non certifié':result.eval.withinBudget?'respecté':'dépassé'}</p>`:''}
+    ${result.eval?`<p><b>Menace cumulée des profils identifiés :</b> ${result.eval.lines.reduce((a,b)=>a+(Number(b.threat??0)*b.qty),0)} · <b>Coût des profils identifiés :</b> ${fmt(result.eval.effectiveKnownXP)} ${result.eval.complete?'(calcul complet)':'(partiel / non validé)'} · <b>Budget :</b> ${esc(budgetLabel(result.eval))}${result.eval.certainOverBudget?` · <strong>Excès connu : ${Math.abs(result.eval.budgetDelta)} XP</strong>`:''}</p>`:''}
     ${result.tableXP!==undefined&&result.tableXP!==null?`<p><b>Coût historique des situations sélectionnées :</b> ${result.tableXPMin!==result.tableXPMax?`${result.tableXPMin}–${result.tableXPMax}`:result.tableXP} XP (historique)</p>`:''}
     ${result.event?`<p><b>Événement indépendant :</b> ${esc(result.event.name)} — ${esc(result.event.description)} <em>(coût et DD à arbitrer)</em></p>`:''}
-    ${result.discovery?`<p><b>Découverte possible :</b> ${esc(result.discovery.label)} · ${esc(result.discovery.source??'Catalogue')} <em>(suggestion, pas d’attribution automatique)</em></p>`:''}
+    ${result.discovery?`<p><b>Découverte possible :</b> ${esc(result.discovery.label)} · <b>Origine :</b> ${esc(DISCOVERY_SOURCE_LABELS[result.discoveryOrigin]??result.discoveryOrigin??'inconnue')} · ${esc(result.discovery.source??'Catalogue')} <em>(suggestion, pas d’attribution automatique)</em></p>`:''}
     ${result.allies.length?`<p><b>Alliés :</b> ${result.allies.map(a=>`${a.qty} × ${esc(a.label)} (${esc(a.role)})`).join(', ')} — non comptés comme PJ supplémentaires.</p>`:''}
     ${warnings?`<p><b>Points d’attention :</b></p><ul>${warnings}</ul>`:''}
     <p><small>Validation MJ requise. Aucun Actor, Item ou Token créé.</small></p>
@@ -29,7 +37,7 @@ export class EncounterUI {
   constructor(data){this.data=data;this.registry=collectProfiles();this.costs=data.costs;this.state={
     biome:'gorges',level:3,difficulty:'standard',type:'tous',unfavorable:false,nearCauldron:false,
     mode:'table',manualCategory:'machine',manualFaction:'',profileId:'',qty:1,allyId:'',allyQty:1,allyRole:'combat',members:[],allies:[],
-    eventChance:30,discoveryChance:20,discoverySource:'machine',selectedSave:'',sceneTitle:'',last:null
+    eventChance:30,discoveryChance:20,discoverySource:'auto',selectedSave:'',sceneTitle:'',last:null
   };this.dialog=null;}
   open(){
     if(this.dialog?.rendered){this.dialog.bringToTop();return this.dialog;}
@@ -93,15 +101,20 @@ export class EncounterUI {
         <small>Filtre de sélection manuel indépendant du type de rencontre. Les factions proviennent du Faction Builder actif.</small>
         <div class="h0d-buttons"><button type="button" data-action="add">Ajouter / verrouiller</button><button type="button" data-action="fill">Proposer un complément</button><button type="button" data-action="clear">Vider</button></div>
         <div data-region="composition" class="h0d-composition"></div>
+        <div data-region="manual-budget" class="h0d-manual-budget"></div>
+        <button type="button" class="h0d-primary h0d-manual-validate" data-action="validateManual">Valider la composition et vérifier le budget XP</button>
+        <small>Cette validation évalue tes adversaires sans déclencher de nouveau tirage aléatoire. Elle ne bloque jamais ta décision de MJ.</small>
       </div>
       <div class="h0d-card">
         <h3>Événements et découvertes facultatifs</h3>
         <div class="h0d-field-row h0d-row-3">
           <label>Chance événement (%) <input data-key="eventChance" type="number" value="${s.eventChance}" min="0" max="100"/></label>
           <label>Chance découverte (%) <input data-key="discoveryChance" type="number" value="${s.discoveryChance}" min="0" max="100"/></label>
-          <label>Source découverte <select data-key="discoverySource">${opt([['machine','Ressources machines'],['creature','Ressources faune'],['equipment','Équipement'],['aucune','Aucune']],s.discoverySource)}</select></label>
+          <label>Source découverte <select data-key="discoverySource">${opt([['auto','Aléatoire (table Foundry)'],['machine','Ressources machines'],['creature','Ressources faune'],['equipment','Équipement'],['aucune','Aucune']],s.discoverySource)}</select></label>
         </div>
-        <small>Ces tirages sont indépendants de l’affrontement. Les événements n’ont pas de coût XP ni de DD inventé.</small>
+        <small>En mode Aléatoire, Foundry choisit d’abord la source dans une table pondérée, puis une découverte dans H0D Loot ou Equipment Builder. La probabilité de découverte reste indépendante.</small>
+        <div class="h0d-buttons"><button type="button" data-action="openDiscoveryTable">Ouvrir la table des sources de découvertes</button></div>
+        <small>Table MJ : ${esc(DISCOVERY_TABLE_NAME)} (une seule création automatique, puis entièrement modifiable).</small>
       </div>
       <details class="h0d-card"><summary>Alliés PNJ (seconde expédition)</summary>
         <div class="h0d-field-row h0d-row-3">
@@ -129,7 +142,17 @@ export class EncounterUI {
   }
   bind(html){
     const s=this.state;
-    const update=el=>{const key=el.dataset.key;if(!key)return;let v=el.type==='checkbox'?el.checked:el.value;if(['qty','allyQty','level','eventChance','discoveryChance'].includes(key))v=Number(v);s[key]=v;};
+    const update=el=>{
+      const key=el.dataset.key;if(!key)return;
+      let v=el.type==='checkbox'?el.checked:el.value;
+      if(['qty','allyQty','level','eventChance','discoveryChance'].includes(key))v=Number(v);
+      const changed=s[key]!==v;s[key]=v;
+      if(changed&&['level','difficulty','unfavorable'].includes(key)){
+        s.last=null;
+        html.find('[data-region="output"]').html('<p>Paramètres modifiés : refaire une validation pour actualiser le résultat.</p>');
+        this.paint(html);
+      }
+    };
     html.on('change input','[data-key]',e=>update(e.currentTarget));
     html.on('change','[data-key="manualCategory"]',e=>{
       s.manualCategory=e.currentTarget.value;
@@ -153,6 +176,18 @@ export class EncounterUI {
     html.find('[data-region="composition"]').html(s.members.length?`<ul>${s.members.map(m=>{
       const profile=this.registry.get(m.id);return `<li>${m.qty} × ${esc(profile?.label??m.id)} · M${profile?.threat??'?'} <button type="button" data-action="remove" data-id="${esc(m.id)}">Retirer</button></li>`;
     }).join('')}</ul>`:'<p class="h0d-muted">Aucun adversaire imposé.</p>');
+    const evaluation=evaluateComposition(s.members,this.registry,this.costs,{
+      level:s.level,difficulty:s.difficulty,unfavorable:s.unfavorable,allies:s.allies
+    });
+    const budgetText=evaluation.budget===null?'Plafond à définir':`${evaluation.budget} XP`;
+    const detail=evaluation.budgetState==='over'?`Dépassement certain : +${Math.abs(evaluation.budgetDelta)} XP connus.`:
+      evaluation.budgetState==='incomplete'?'Le coût final peut être supérieur aux XP connus.':
+      evaluation.budgetState==='within'?'Dans le budget historique, sans garantie de sécurité tactique.':
+      evaluation.budgetState==='no-budget'?'Niveaux 11 à 15 : plafond non validé.':'Sélectionne au moins un adversaire.';
+    html.find('[data-region="manual-budget"]').html(
+      `<div class="h0d-budget-${esc(evaluation.budgetState)}"><strong>${esc(budgetLabel(evaluation))}</strong>
+      <p>XP documentés : <b>${evaluation.effectiveKnownXP}</b> / ${budgetText} · ${esc(detail)}</p></div>`
+    );
     html.find('[data-region="allies"]').html(s.allies.map(m=>`<p>${m.qty} × ${esc(m.label)} (${esc(m.role)})</p>`).join(''));
     if(s.last)html.find('[data-region="output"]').html(messageHTML(s.last));
   }
@@ -161,10 +196,17 @@ export class EncounterUI {
     const selectedEvents=this.data.events[s.biome]??[];
     // La proximité des Creusets n'invente aucun bonus numérique ; elle oriente la composition.
     const event=chance(s.eventChance)?weightedChoice(selectedEvents.map(e=>({...e,weight:1}))):null;
-    const origin=s.discoverySource;
-    const candidates=origin==='aucune'?[]:lootCandidates(origin,this.data.seedLoot);
-    const discovery=chance(s.discoveryChance)?resolveLoot(weightedChoice(candidates)):null;
-    return {event,discovery};
+    let discovery=null,discoveryOrigin=null;
+    if(s.discoverySource!=='aucune'&&chance(s.discoveryChance)){
+      const available=source=>lootCandidates(source,this.data.seedLoot);
+      if(s.discoverySource==='auto'){
+        discoveryOrigin=chooseDiscoverySource(findDiscoveryTable(),available)?.id??null;
+      }else{
+        discoveryOrigin=s.discoverySource;
+      }
+      if(discoveryOrigin)discovery=resolveLoot(weightedChoice(available(discoveryOrigin)));
+    }
+    return {event,discovery,discoveryOrigin};
   }
   createResult({description='',mode,entries=[],tableEntries=[],extra=true,extraWarnings=[]}={}){
     const s=this.state;
@@ -176,7 +218,7 @@ export class EncounterUI {
       complete:evaluated.complete&&!missingRows.length,
       withinBudget:missingRows.length?null:evaluated.withinBudget,
       totalXP:missingRows.length?null:evaluated.totalXP}:null;
-    const additions=extra?this.extra():{event:s.last?.event??null,discovery:s.last?.discovery??null};
+    const additions=extra?this.extra():{event:null,discovery:null,discoveryOrigin:null};
     const warnings=[...extraWarnings];
     if(missingRows.length)warnings.push(`${missingRows.length} situation(s) sans correspondance de profil validée : consulter le texte original et sélectionner les Actors manuellement ; validation XP globale impossible.`);
     if(sourceRows.length){
@@ -212,21 +254,47 @@ export class EncounterUI {
       if(!this.registry.has(s.profileId)||!this.manualProfiles().some(([id])=>id===s.profileId))
         throw new Error('Choisis un profil appartenant à la catégorie et à la faction sélectionnées.');
       if(!Number.isInteger(s.qty)||s.qty<1||s.qty>50)throw new Error('Quantité invalide (1–50).');
-      s.members=mergeComposition([...s.members,{id:s.profileId,qty:s.qty}]);this.paint(html);return;
+      s.members=mergeComposition([...s.members,{id:s.profileId,qty:s.qty}]);
+      s.last=null;
+      html.find('[data-region="output"]').html('<p>Composition modifiée : valide à nouveau le budget.</p>');
+      this.paint(html);return;
     }
     if(action==='remove'){
       const id=this.clickedId;
       if(id)s.members=s.members.filter(m=>m.id!==id);
+      s.last=null;
+      html.find('[data-region="output"]').html('<p>Composition modifiée : valide à nouveau le budget.</p>');
       this.paint(html);return;
     }
-    if(action==='clear'){s.members=[];s.last=null;html.find('[data-region="output"]').empty();this.paint(html);return;}
+    if(action==='clear'){s.members=[];s.last=null;html.find('[data-region="output"]').html('<p>Composition vidée.</p>');this.paint(html);return;}
     if(action==='addAlly'){
       const profile=this.registry.get(s.allyId);
       if(!profile||profile.source!=='faction')throw new Error('Choisis un PNJ du Faction Builder.');
       if(!Number.isInteger(s.allyQty)||s.allyQty<1||s.allyQty>50)throw new Error('Quantité PNJ invalide.');
-      s.allies.push({id:profile.id,label:profile.label,qty:s.allyQty,role:s.allyRole});this.paint(html);return;
+      s.allies.push({id:profile.id,label:profile.label,qty:s.allyQty,role:s.allyRole});s.last=null;this.paint(html);return;
     }
-    if(action==='clearAllies'){s.allies=[];this.paint(html);return;}
+    if(action==='clearAllies'){s.allies=[];s.last=null;this.paint(html);return;}
+    if(action==='validateManual'){
+      if(!s.members.length)throw new Error('Ajoute au moins un adversaire pour contrôler le budget.');
+      if(!Number.isInteger(s.level)||s.level<1||s.level>15)throw new Error('Niveau attendu de 1 à 15.');
+      s.mode='manuel';
+      html.find('[data-key="mode"]').val('manuel');
+      this.createResult({
+        mode:'manuel',entries:s.members,extra:false,
+        description:'Composition personnalisée vérifiée par le MJ.'
+      });
+      this.paint(html);
+      ui.notifications.info(s.last.eval?.certainOverBudget?
+        'Encounter Builder : budget dépassé (dépassement certain).':
+        s.last.eval?.complete?'Encounter Builder : budget calculé, consulte le verdict.':
+        'Encounter Builder : données XP incomplètes, consulte les avertissements.');
+      return;
+    }
+    if(action==='openDiscoveryTable'){
+      const table=findDiscoveryTable()??await ensureDiscoveryTable();
+      if(!table)throw new Error('Table des sources indisponible : ouvre le monde avec un compte MJ et vérifie les permissions.');
+      table.sheet?.render(true);return;
+    }
     if(action==='fill'){
       const suggestion=suggestComposition(s.members,buildBiomePool(s.biome,this.data.recipes),this.registry,this.costs,{level:s.level,difficulty:s.difficulty,unfavorable:s.unfavorable,nearCauldron:s.nearCauldron,type:s.type});
       s.members=suggestion.composition;
@@ -270,7 +338,7 @@ export class EncounterUI {
       if(!s.sceneTitle.trim())throw new Error('Indique un nom pour cette rencontre.');
       if(!s.members.length)throw new Error('Ajoute au moins un adversaire avant de sauvegarder cette composition.');
       const id=globalThis.foundry?.utils?.randomID?.()??String(Date.now());
-      const saves=[...this.saves,{id,title:s.sceneTitle.trim(),config:{biome:s.biome,level:s.level,difficulty:s.difficulty,unfavorable:s.unfavorable,nearCauldron:s.nearCauldron,members:mergeComposition(s.members),allies:s.allies}}];
+      const saves=[...this.saves,{id,title:s.sceneTitle.trim(),config:{biome:s.biome,level:s.level,difficulty:s.difficulty,unfavorable:s.unfavorable,nearCauldron:s.nearCauldron,members:mergeComposition(s.members),allies:s.allies,type:s.type,eventChance:s.eventChance,discoveryChance:s.discoveryChance,discoverySource:s.discoverySource}}];
       await game.settings.set(MID,'savedEncounters',saves);
       const select=html.find('[data-key="selectedSave"]');select.append(`<option value="${esc(id)}">${esc(s.sceneTitle)}</option>`);select.val(id);s.selectedSave=id;
       ui.notifications.info('Composition sauvegardée dans les paramètres du monde.');return;
@@ -280,7 +348,7 @@ export class EncounterUI {
       if(!item)throw new Error('Choisis une composition sauvegardée.');
       Object.assign(s,item.config,{mode:'manuel',sceneTitle:item.title,last:null});
       // Actualiser les champs après restauration ; aucun document Foundry n’est créé.
-      for(const key of ['biome','level','difficulty','mode','unfavorable','nearCauldron','sceneTitle']){
+      for(const key of ['biome','level','difficulty','mode','unfavorable','nearCauldron','sceneTitle','type','eventChance','discoveryChance','discoverySource']){
         const el=html.find(`[data-key="${key}"]`);if(el.length){if(el.attr('type')==='checkbox')el.prop('checked',!!s[key]);else el.val(s[key]);}
       }
       html.find('[data-region="output"]').empty();this.paint(html);

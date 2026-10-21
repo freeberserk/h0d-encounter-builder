@@ -1,4 +1,4 @@
-# H0D Encounter Builder — v0.1.2 (catégories manuelles)
+# H0D Encounter Builder — v0.1.3 (validation manuelle et table de sources)
 
 Module Foundry VTT **v14** / **Custom System Builder 6.x** pour la campagne **JDR Zero Dawn**. Remplace la macro « table de rencontre » (qui reste indépendante tant que tu ne la supprimes pas).
 
@@ -7,12 +7,12 @@ Module Foundry VTT **v14** / **Custom System Builder 6.x** pour la campagne **JD
 ## Ce qui fonctionne dans cette première version
 
 - **RollTables** : lecture des tables du monde (prioritaires), ou des **7 exports** fournis en secours, sans importer ni modifier aucune table. Les doublons portant le même nom sont départagés par `flags.h0d.version` décroissant (Vallée V2 plutôt que V1).
-- **Mode manuel** : choix par catégorie **Machines / Faune / Factions**, puis par faction (noms dynamiques venant du Faction Builder), puis par profil et quantité. La composition reste intacte quand tu changes de catégorie. Les membres du Conseil sont regroupés avec la Dent d'Ambre lorsque leur profil est exposé.
+- **Mode manuel** : contrôle XP via **« Valider la composition et vérifier le budget XP »** directement sous la sélection, avec prévisualisation et distinction entre dépassement certain, budget respecté et XP inconnus. Choix par catégorie **Machines / Faune / Factions**, puis par faction (noms dynamiques venant du Faction Builder), puis par profil et quantité. La composition reste intacte quand tu changes de catégorie. Les membres du Conseil sont regroupés avec la Dent d'Ambre lorsque leur profil est exposé.
 - **Mode « Composition proposée »** : composition basée sur les recettes de biome structurées et sur les **coûts individuels effectivement documentés**. Actuellement, les Gorges sont le biome pilote ; d'autres mappings partiels sont fournis.
 - **Calculs** : conservation du tableau des budgets XP de la macro d'origine, niveaux **1–10 seulement**, facteur défavorable facultatif **+25 %**, comparaison au plafond. Les niveaux 11–15 sont accessibles **sans plafond chiffré** en attendant un barème validé.
 - **PNJ** : les trois PJ sont fixes. Tu peux inscrire des alliés (combat / appui / non engagés) : ils sont affichés, **sans conversion automatique en PJ ni bonus XP inventé**.
 - **Événements** : tirage indépendant avec probabilité réglable, propositions d'ambiance et de dangers, sans DD ni coût inventés ; les exemples sont explicitement éditoriaux et **non de nouveaux canons**.
-- **Découvertes** : tirage indépendant depuis la RollTable officielle **H0D Loot — Ressources machine** ou **Ressources créature**, ou depuis le catalogue **Equipment Builder**. Les exports de butin sont embarqués comme secours. Ce sont **des suggestions**, sans création/transfert d'Item, et l'équipement n'est pas encore filtré par biome/rareté.
+- **Découvertes** : source **Aléatoire (table Foundry)** par défaut, ou sélection manuelle. Le MJ peut modifier les poids de la table **H0D Encounter — Sources de découvertes**, créée une seule fois par le module. Une fois la source choisie, tirage indépendant depuis la RollTable officielle **H0D Loot — Ressources machine** ou **Ressources créature**, ou depuis le catalogue **Equipment Builder**. Les exports de butin sont embarqués comme secours. Ce sont **des suggestions**, sans création/transfert d'Item, et l'équipement n'est pas encore filtré par biome/rareté.
 - **Sauvegarde** : enregistre la composition manuelle dans les réglages du monde ; peut la recharger. Ne touche pas aux RollTables.
 - **Sortie** : résultat dans la fenêtre persistante, bouton d'envoi au **chat privé du MJ**.
 
@@ -32,7 +32,7 @@ Décompresse le **zip Foundry** (`h0d-encounter-builder-foundry-v0.1.0.zip`) dan
 
 `Data/modules/h0d-encounter-builder/`
 
-Le fichier `module.json` doit se trouver directement dans ce dossier. Active ensuite **H0D Encounter Builder** dans la configuration des modules du monde BAC.
+Le fichier `module.json` doit se trouver directement dans ce dossier. Pour les installations existantes, utiliser le manifeste et la mise à jour Foundry plutôt que de recréer le module. Active ensuite **H0D Encounter Builder** dans la configuration des modules du monde BAC.
 
 La macro **« H0D — Encounter Builder »** est créée automatiquement. Tu peux la mettre dans la barre rapide ; l'ancienne macro pourra être désactivée après vérification.
 
@@ -102,3 +102,33 @@ Les tests contrôlent notamment la validation 2 Watchers + Scrapper = 70 XP, le 
 4. Le filtre global **Type de rencontre** concerne les tirages et compositions proposées, pas le choix libre des adversaires manuels.
 
 Aucun coût XP ou Actor n'est inventé par cette nouvelle interface.
+
+## v0.1.3 — Validation manuelle et sources de découvertes automatisées
+
+### Vérifier une composition manuelle
+
+1. Dans **Composition personnalisée**, choisir plusieurs adversaires et leurs quantités.
+2. Un bloc **Contrôle du budget (prévisionnel)** se met à jour lors de l'ajout, du retrait ou du changement de niveau/difficulté.
+3. Cliquer sur **Valider la composition et vérifier le budget XP** (bouton sous la liste des adversaires).
+4. Le builder indique **budget historique respecté**, **dépassement certain**, **calcul incomplet** ou **plafond non défini**. Le résultat garde la liberté de décision du MJ et n'ajoute aucun Actor.
+5. La validation seule ne tire pas de découverte. Utiliser **Relancer événements / loot** sur une rencontre validée si tu souhaites des propositions secondaires.
+
+En cas de dépassement, les XP connus donnent un excès certain, même si des adversaires ont un coût non documenté. Si le total connu est inférieur au plafond mais incomplet, il n'est pas déclaré équilibré. Les plafonds de la macro sont historiques et pas encore calibrés pour 3 PJ.
+
+### Table source de découvertes
+
+Au premier chargement du monde par un MJ, le module crée une unique **RollTable** :
+
+**H0D Encounter — Sources de découvertes**
+
+Elle contient trois résultats de **même poids initial (1 chacun)** :
+
+- **Ressources machines** : renvoie vers la RollTable H0D Loot de ressources machines (ou ses secours).
+- **Ressources faune** : renvoie vers la RollTable H0D Loot de ressources créatures (ou ses secours).
+- **Équipement** : renvoie vers le catalogue H0D Equipment Builder si actif.
+
+Dans **Source découverte**, sélectionner **Aléatoire (table Foundry)**, désormais valeur par défaut. L'option **Aucune** reste disponible, et le bouton **Ouvrir la table des sources de découvertes** ouvre la vraie RollTable du monde.
+
+Les **poids** peuvent être modifiés dans Foundry pour changer la fréquence des catégories ; le module relit la table à chaque tirage. Les catégories pour lesquelles aucun résultat de découverte n'est disponible sont ignorées, sans modifier les poids enregistrés. La chance de découverte (%) est calculée AVANT le tirage de la source ; une table de sources sans entrée valide ne produit pas de loot inventé.
+
+**Sécurité :** aucune table existante n'est écrasée, aucune source n'est copiée en Actor/Item, et les RollTables H0D Loot existantes restent séparées. Des découvertes narratives ou des butins de factions plus détaillés devront être définis et validés ultérieurement.

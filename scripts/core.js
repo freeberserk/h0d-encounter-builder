@@ -123,7 +123,14 @@ export function evaluateComposition(entries,registry,costs,{level=3,difficulty='
   if(!composition.length)warnings.push('Aucun adversaire sélectionné : rencontre non hostile ou scène d’exploration possible.');
   if(budget!==null && estimated>budget)warnings.push('Le coût XP connu dépasse le budget demandé. Aucune correction automatique imposée.');
   warnings.push('Barème historique de la macro non recalibré pour 3 PJ : prudence sur la difficulté réelle.');
-  return {lines,baseKnownXP:known,effectiveKnownXP:estimated,budget,complete:baseComplete,totalXP:baseComplete?estimated:null,withinBudget:baseComplete&&budget!==null?estimated<=budget:null,warnings};
+  // Un dépassement du montant connu est certain même si d'autres coûts sont absents.
+  // À l'inverse, une rencontre incomplète sous le plafond ne peut jamais être déclarée sûre.
+  const certainOverBudget=budget!==null && estimated>budget;
+  const budgetState=!composition.length?'empty':budget===null?'no-budget':certainOverBudget?'over':!baseComplete?'incomplete':'within';
+  return {lines,baseKnownXP:known,effectiveKnownXP:estimated,budget,
+    complete:baseComplete,totalXP:baseComplete?estimated:null,
+    withinBudget:baseComplete&&budget!==null?estimated<=budget:null,
+    certainOverBudget,budgetState,budgetDelta:budget===null?null:budget-estimated,warnings};
 }
 /** Complète la composition sans dépasser le budget, exclusivement avec coûts individuels documentés. */
 export function suggestComposition(current, pool, registry, costs,opts={},rng=Math.random){

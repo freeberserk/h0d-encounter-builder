@@ -1,5 +1,16 @@
 # Changements H0D Encounter Builder
 
+## v0.1.3 — Validation manuelle et table de sources de découvertes
+
+- Bouton **Valider la composition et vérifier le budget XP** placé dans le bloc du choix manuel.
+- Récapitulatif vivant du total documenté / plafond, avec signalement d'un dépassement certain même si d'autres coûts sont absents.
+- Validation indépendante des tirages de loot, qui restent facultatifs.
+- Création automatique une seule fois de la RollTable **H0D Encounter — Sources de découvertes**.
+- Trois sources initiales de même poids : machines, faune et équipement ; édition des poids par le MJ.
+- Nouvelle option **Aléatoire (table Foundry)** par défaut pour la source de découvertes.
+- Le tirage de source précède celui du contenu et respecte les catalogues H0D Loot / Equipment disponibles.
+- Aucune modification des anciennes RollTables, des Actors ou des Items.
+
 ## v0.1.2 — Catégories du choix manuel
 
 - Sélection en deux ou trois étapes : Machines / Faune / Factions, faction éventuelle, puis profil.
