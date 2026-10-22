@@ -1,4 +1,4 @@
-# H0D Encounter Builder — v0.1.3 (validation manuelle et table de sources)
+# H0D Encounter Builder — v0.1.4 (escouades HelioSium / factions PDF)
 
 Module Foundry VTT **v14** / **Custom System Builder 6.x** pour la campagne **JDR Zero Dawn**. Remplace la macro « table de rencontre » (qui reste indépendante tant que tu ne la supprimes pas).
 
@@ -132,3 +132,18 @@ Dans **Source découverte**, sélectionner **Aléatoire (table Foundry)**, déso
 Les **poids** peuvent être modifiés dans Foundry pour changer la fréquence des catégories ; le module relit la table à chaque tirage. Les catégories pour lesquelles aucun résultat de découverte n'est disponible sont ignorées, sans modifier les poids enregistrés. La chance de découverte (%) est calculée AVANT le tirage de la source ; une table de sources sans entrée valide ne produit pas de loot inventé.
 
 **Sécurité :** aucune table existante n'est écrasée, aucune source n'est copiée en Actor/Item, et les RollTables H0D Loot existantes restent séparées. Des découvertes narratives ou des butins de factions plus détaillés devront être définis et validés ultérieurement.
+
+## v0.1.4 — Factions PDF et recettes HelioSium
+
+Cette version relit les profils du **H0D Faction Builder v0.6.3** :
+
+- **10 métiers de la Dent d'Ambre** : chasseurs, récupérateurs, éclaireurs, gardiens, soins, forge, Focus, dresseurs, sentinelles, maître d'armes. Les neuf membres du Conseil restent gérés comme PNJ uniques.
+- **11 profils HelioSium** : Menace 3–15, rareté, type de liaison (I–IV, direct), rôle et conditions d'apparition importés via `archetype.encounter`.
+- **9 recettes de composition HelioSium** exposées par `game.h0dFactionBuilder.heliosiumEncounters`, visibles sous le bloc **Composition personnalisée**. Cliquer sur **Charger la recette en composition MANUELLE** ; les quantités minimales sont chargées, puis le MJ peut modifier la scène.
+- **Recettes conditionnelles** : la sélection est bloquée tant que le MJ n'a pas explicitement confirmé les prérequis (Élu et composants disponibles pour l'Avatar, autres conditions scénaristiques).
+- **Corps véritable** : jamais inclus dans un tirage automatique. Sa recette finale exige une confirmation distincte, libellée « Boss final unique ». Le profil reste toujours sélectionnable manuellement par le MJ.
+- **Avertissements tactiques** : Auxiliaires défensifs (aucun bonus offensif de tenaille), bonus de phalange des Lanciers, escorte prioritaire de l'Élu, opérateur et plateforme d'Artilleur séparés, réseau réorganisé par Officier, Avatar conditionnel, boss multiphase Titan/Cœur.
+- Les règles et synergies ne sont **pas** converties arbitrairement en XP. Le builder signale « coût incomplet » tant qu'aucun coût individuel documenté n'existe.
+- Les événements et découvertes fonctionnent indépendamment. Aucune génération d'Actors, Items ou Tokens, aucune modification de RollTable historique.
+
+L'option « Composition proposée » continue d'utiliser uniquement les anciennes RollTables / recettes de biomes. Les escouades de fin de campagne sont **volontairement manuelles** pour éviter les révélations prématurées et respecter les conditions du PDF.

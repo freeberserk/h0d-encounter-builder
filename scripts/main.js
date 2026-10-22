@@ -1,9 +1,10 @@
 import {EncounterUI} from './ui.js';
-import {collectProfiles,integrationStatus,getTableData,buildBiomePool} from './integrations.js';
+import {collectProfiles,integrationStatus,getTableData,buildBiomePool,getHeliosiumRecipes} from './integrations.js';
 import {evaluateComposition,suggestComposition,budgetFor,eligibleTableEntries,weightedChoice,BIOMES} from './core.js';
 import {ensureDiscoveryTable,findDiscoveryTable,discoverySources} from './discoveries.js';
+import {prepareHeliosiumRecipe,heliosiumSynergyWarnings} from './endgame.js';
 const ID='h0d-encounter-builder';
-const VERSION='0.1.3';
+const VERSION='0.1.4';
 const data={seedTables:{},seedLoot:{},recipes:{},events:{},costs:{}};
 let uiInstance=null;
 async function loadData(){
@@ -49,6 +50,9 @@ Hooks.once('ready',async()=>{
     validate:(composition,options={})=>evaluateComposition(composition,collectProfiles(),data.costs,options),
     suggest:(composition,biome,options={})=>suggestComposition(composition,buildBiomePool(biome,data.recipes),collectProfiles(),data.costs,options),
     budget:budgetFor,
+    heliosiumRecipes:getHeliosiumRecipes,
+    prepareHeliosiumRecipe:(recipeId,opts={})=>prepareHeliosiumRecipe(getHeliosiumRecipes().find(r=>r.id===recipeId),collectProfiles(),opts),
+    endgameWarnings:composition=>heliosiumSynergyWarnings(composition,collectProfiles()),
     eligible:(biome,options)=>eligibleTableEntries(getTableData(biome,data.seedTables).results,options),
     data:()=>({tables:Object.keys(data.seedTables),recipes:Object.keys(data.recipes),events:Object.keys(data.events),costs:Object.keys(data.costs)})
   };

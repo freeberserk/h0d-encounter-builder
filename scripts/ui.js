@@ -1,5 +1,6 @@
 import {BIOMES,DIFFICULTIES,TYPES,norm,budgetFor,eligibleTableEntries,weightedChoice,mergeComposition,evaluateComposition,suggestComposition,proposeTableScenario,chance,biomeName} from './core.js';
-import {collectProfiles,getTableData,buildBiomePool,findRecipe,lootCandidates,resolveLoot,integrationStatus,MANUAL_CATEGORIES,factionChoices,manualChoices} from './integrations.js';
+import {collectProfiles,getTableData,buildBiomePool,findRecipe,lootCandidates,resolveLoot,integrationStatus,MANUAL_CATEGORIES,factionChoices,manualChoices,getHeliosiumRecipes} from './integrations.js';
+import {prepareHeliosiumRecipe,heliosiumSynergyWarnings} from './endgame.js';
 import {findDiscoveryTable,chooseDiscoverySource,ensureDiscoveryTable,DISCOVERY_TABLE_NAME,DISCOVERY_SOURCE_LABELS} from './discoveries.js';
 const MID='h0d-encounter-builder';
 const escapeHTML=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -37,7 +38,7 @@ export class EncounterUI {
   constructor(data){this.data=data;this.registry=collectProfiles();this.costs=data.costs;this.state={
     biome:'gorges',level:3,difficulty:'standard',type:'tous',unfavorable:false,nearCauldron:false,
     mode:'table',manualCategory:'machine',manualFaction:'',profileId:'',qty:1,allyId:'',allyQty:1,allyRole:'combat',members:[],allies:[],
-    eventChance:30,discoveryChance:20,discoverySource:'auto',selectedSave:'',sceneTitle:'',last:null
+    eventChance:30,discoveryChance:20,discoverySource:'auto',selectedSave:'',sceneTitle:'',last:null,recipeId:'',recipeConditions:false,recipeFinal:false
   };this.dialog=null;}
   open(){
     if(this.dialog?.rendered){this.dialog.bringToTop();return this.dialog;}
@@ -56,7 +57,7 @@ export class EncounterUI {
     return [...this.registry.values()].filter(x=>x.source!==excludeSource).sort((a,b)=>a.label.localeCompare(b.label,'fr')).map(x=>[x.id,`${x.label} · M${x.threat} · ${x.source}`]);
   }
   manualProfiles(){
-    return manualChoices(this.registry,this.state.manualCategory,this.state.manualFaction).map(profile=>[profile.id,`${profile.label} · M${profile.threat}`]);
+    return manualChoices(this.registry,this.state.manualCategory,this.state.manualFaction).map(profile=>[profile.id,`${profile.label} · M${profile.threat}${profile.encounter?.generation_aleatoire==='non'?' · BOSS UNIQUE (manuel seulement)':profile.encounter?.generation_aleatoire==='conditionnelle'?' · conditionnel':''}`]);
   }
   updateManualSelectors(html){
     const s=this.state, groups=factionChoices(this.registry);
@@ -71,7 +72,7 @@ export class EncounterUI {
     html.find('[data-key="profileId"]').html(opt([['',placeholder],...profiles],s.profileId));
   }
   template(){
-    const s=this.state;const valid=this.optionProfiles();const groups=factionChoices(this.registry);
+    const s=this.state;const valid=this.optionProfiles();const groups=factionChoices(this.registry);const endgameRecipes=getHeliosiumRecipes();
     const status=integrationStatus();
     const integrations=Object.entries(status).map(([key,ok])=>`<span class="h0d-chip ${ok?'on':'off'}">${esc(key)} ${ok?'✓':'–'}</span>`).join('');
     return `<section class="h0d-encounter-wrap">
@@ -104,6 +105,13 @@ export class EncounterUI {
         <div data-region="manual-budget" class="h0d-manual-budget"></div>
         <button type="button" class="h0d-primary h0d-manual-validate" data-action="validateManual">Valider la composition et vérifier le budget XP</button>
         <small>Cette validation évalue tes adversaires sans déclencher de nouveau tirage aléatoire. Elle ne bloque jamais ta décision de MJ.</small>
+        ${endgameRecipes.length?`<details class="h0d-card h0d-endgame-recipes"><summary>Escouades HelioSium — recettes du PDF (Acte V)</summary>
+          <label>Composition préparée <select data-key="recipeId">${opt([['','— Choisir une composition —'],...endgameRecipes.map(r=>[r.id,r.nom])],s.recipeId)}</select></label>
+          <label class="h0d-toggle"><input type="checkbox" data-key="recipeConditions" ${s.recipeConditions?'checked':''}/> Conditions narratives réunies (Élu, modules / ressources, campagne en fin d'acte, selon la recette)</label>
+          <label class="h0d-toggle"><input type="checkbox" data-key="recipeFinal" ${s.recipeFinal?'checked':''}/> Je choisis explicitement le **boss final unique** (jamais aléatoire)</label>
+          <button type="button" data-action="loadEndgameRecipe">Charger la recette en composition MANUELLE</button>
+          <small>Quantités minimales du document ; tu peux ensuite compléter ou ajuster la scène. Aucune recette n'est déclarée équilibrée tant que les XP restent inconnus.</small>
+        </details>`:''}
       </div>
       <div class="h0d-card">
         <h3>Événements et découvertes facultatifs</h3>
@@ -219,7 +227,7 @@ export class EncounterUI {
       withinBudget:missingRows.length?null:evaluated.withinBudget,
       totalXP:missingRows.length?null:evaluated.totalXP}:null;
     const additions=extra?this.extra():{event:null,discovery:null,discoveryOrigin:null};
-    const warnings=[...extraWarnings];
+    const warnings=[...extraWarnings,...heliosiumSynergyWarnings(entries,this.registry)];
     if(missingRows.length)warnings.push(`${missingRows.length} situation(s) sans correspondance de profil validée : consulter le texte original et sélectionner les Actors manuellement ; validation XP globale impossible.`);
     if(sourceRows.length){
       if(sourceRows.some(r=>r.xpMax===null))warnings.push('XP non renseignés dans une table source.');
@@ -274,6 +282,20 @@ export class EncounterUI {
       s.allies.push({id:profile.id,label:profile.label,qty:s.allyQty,role:s.allyRole});s.last=null;this.paint(html);return;
     }
     if(action==='clearAllies'){s.allies=[];s.last=null;this.paint(html);return;}
+    if(action==='loadEndgameRecipe'){
+      const recipe=getHeliosiumRecipes().find(r=>r.id===s.recipeId);
+      const plan=prepareHeliosiumRecipe(recipe,this.registry,{
+        allowFinal:s.recipeFinal,conditionsMet:s.recipeConditions
+      });
+      s.members=mergeComposition(plan.entries);
+      s.mode='manuel';
+      html.find('[data-key="mode"]').val('manuel');
+      this.createResult({mode:'manuel',entries:s.members,description:plan.description,
+        extra:false,extraWarnings:plan.warnings});
+      this.paint(html);
+      ui.notifications.info('Recette HelioSium chargée. Vérifie les conditions et les avertissements du MJ.');
+      return;
+    }
     if(action==='validateManual'){
       if(!s.members.length)throw new Error('Ajoute au moins un adversaire pour contrôler le budget.');
       if(!Number.isInteger(s.level)||s.level<1||s.level>15)throw new Error('Niveau attendu de 1 à 15.');

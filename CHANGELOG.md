@@ -1,5 +1,12 @@
 # Changements H0D Encounter Builder
 
+## v0.1.4 — Factions PDF, recettes de fin de campagne et protections
+- Intégration des profils Dent d'Ambre et HelioSium en lisant le Faction Builder v0.6.3, sans duplication de catalogues.
+- Liste des 9 recettes HelioSium sous le choix manuel ; conditions scénaristiques explicites, boss final unique jamais tiré.
+- Informations de liaison / rareté / conditions affichées depuis les métadonnées de profils.
+- Analyse tactique : phalanges, réseau, opérateur/plateforme, priorités du Noyau, Avatar, boss multiphase.
+- Aucune nouvelle règle XP, aucune création automatique de fiches.
+
 ## v0.1.3 — Validation manuelle et table de sources de découvertes
 
 - Bouton **Valider la composition et vérifier le budget XP** placé dans le bloc du choix manuel.
