@@ -4,7 +4,7 @@ import {evaluateComposition,suggestComposition,budgetFor,eligibleTableEntries,we
 import {ensureDiscoveryTable,findDiscoveryTable,discoverySources} from './discoveries.js';
 import {prepareHeliosiumRecipe,heliosiumSynergyWarnings} from './endgame.js';
 const ID='h0d-encounter-builder';
-const VERSION='0.1.4';
+const VERSION='0.1.5';
 const data={seedTables:{},seedLoot:{},recipes:{},events:{},costs:{}};
 let uiInstance=null;
 async function loadData(){

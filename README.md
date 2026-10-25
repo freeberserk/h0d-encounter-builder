@@ -1,3 +1,14 @@
+# H0D Encounter Builder — v0.1.5 : HELIOS, concept ≠ combat
+
+Les 11 nouvelles références HELIOS du **Faction Builder v0.6.4** apparaissent dans `Composition manuelle → Factions → HELIOS`.
+
+- **9 unités de service + Gardien du Cycle** : `RÉFÉRENCE NON CHIFFRÉE`, et Menace non définie pour le Gardien du Cycle. Le Faction Builder bloque la création d'Actors tant que les caractéristiques de combat manquent. En validation de rencontre, le résultat reste **narratif / calcul incomplet**, sans inventer de coût XP.
+- **Gardien Nexus** : Menace 13, profil chiffré ; ajouté uniquement par le MJ. L'Encounter Builder rappelle automatiquement : **docké hors crise**, **non hostile par défaut**, **désescalade possible**, **DEF 24 connecté / 20 autonome**, **Canon Gauss seulement connecté et en protocole Éradication**.
+- Les RollTables historiques ne sont pas modifiées. HELIOS ne reçoit **aucune** recette d'escouade militaire : il ne faut pas le confondre avec HelioSium.
+- Le Faction Builder reste l'unique source des profils ; aucun Actor, Item ou Token n'est créé par l'Encounter Builder.
+
+---
+
 # H0D Encounter Builder — v0.1.4 (escouades HelioSium / factions PDF)
 
 Module Foundry VTT **v14** / **Custom System Builder 6.x** pour la campagne **JDR Zero Dawn**. Remplace la macro « table de rencontre » (qui reste indépendante tant que tu ne la supprimes pas).

@@ -57,7 +57,9 @@ export class EncounterUI {
     return [...this.registry.values()].filter(x=>x.source!==excludeSource).sort((a,b)=>a.label.localeCompare(b.label,'fr')).map(x=>[x.id,`${x.label} · M${x.threat} · ${x.source}`]);
   }
   manualProfiles(){
-    return manualChoices(this.registry,this.state.manualCategory,this.state.manualFaction).map(profile=>[profile.id,`${profile.label} · M${profile.threat}${profile.encounter?.generation_aleatoire==='non'?' · BOSS UNIQUE (manuel seulement)':profile.encounter?.generation_aleatoire==='conditionnelle'?' · conditionnel':''}`]);
+    return manualChoices(this.registry,this.state.manualCategory,this.state.manualFaction).map(profile=>[
+      profile.id,`${profile.label} · ${profile.threat===null?'Menace à définir':'M'+profile.threat}${profile.combatReady===false?' · RÉFÉRENCE NON CHIFFRÉE':profile.encounter?.generation_aleatoire==='non'?' · CONDITIONNEL / MANUEL':profile.encounter?.generation_aleatoire==='conditionnelle'?' · conditionnel':''}`
+    ]);
   }
   updateManualSelectors(html){
     const s=this.state, groups=factionChoices(this.registry);
@@ -228,6 +230,12 @@ export class EncounterUI {
       totalXP:missingRows.length?null:evaluated.totalXP}:null;
     const additions=extra?this.extra():{event:null,discovery:null,discoveryOrigin:null};
     const warnings=[...extraWarnings,...heliosiumSynergyWarnings(entries,this.registry)];
+    const concepts=mergeComposition(entries).filter(m=>this.registry.get(m.id)?.combatReady===false);
+    if(concepts.length)warnings.push(
+      concepts.length+" profil(s) de référence HELIOS NON CHIFFRÉ(S) : aucun Actor de combat créable tant que PV, DEF, ATQ, sauvegardes et DD n'ont pas été validés. Cette composition est NARRATIVE et ne peut être certifiée équilibrée."
+    );
+    if(mergeComposition(entries).some(m=>this.registry.get(m.id)?.originalKey==='gardien-nexus'))
+      warnings.push("Gardien Nexus : docké hors seuil critique ; activation non hostile par défaut, désescalade possible. DEF 24 connecté / 20 autonome. Canon Gauss seulement connecté ET protocole Éradication.");
     if(missingRows.length)warnings.push(`${missingRows.length} situation(s) sans correspondance de profil validée : consulter le texte original et sélectionner les Actors manuellement ; validation XP globale impossible.`);
     if(sourceRows.length){
       if(sourceRows.some(r=>r.xpMax===null))warnings.push('XP non renseignés dans une table source.');

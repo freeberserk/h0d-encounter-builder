@@ -46,7 +46,7 @@ export function collectProfiles(){
   const names=new Map(readMap(factions?.factions).map(([key,value])=>[key,value?.label??key]));
   const factionLabel=key=>names.get(key)??String(key??'').replace(/-/g,' ');
   for(const [key,value] of readMap(factions?.archetypes)){
-    registry.set('faction:'+key,{id:'faction:'+key,label:value.label??key,source:'faction',threat:Number(value.actor?.props?.H0D_Creature_Menace??0),role:value.actor?.props?.H0D_Creature_Role??'',faction:value.factionKey??'',factionLabel:factionLabel(value.factionKey),originalKey:key,encounter:value.encounter??null});
+    registry.set('faction:'+key,{id:'faction:'+key,label:value.label??key,source:'faction',threat:value.actor?.props?.H0D_Creature_Menace===''?null:Number(value.actor?.props?.H0D_Creature_Menace??0),role:value.actor?.props?.H0D_Creature_Role??'',faction:value.factionKey??'',factionLabel:factionLabel(value.factionKey),originalKey:key,encounter:value.encounter??null,combatReady:value.combatReady!==false&&!value.incomplete,incomplete:!!value.incomplete});
   }
   for(const [key,value] of readMap(factions?.council?.entries)){
     registry.set('faction:council-'+key,{

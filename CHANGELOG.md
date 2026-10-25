@@ -1,5 +1,11 @@
 # Changements H0D Encounter Builder
 
+## v0.1.5 — Précautions HELIOS
+- Import des métadonnées `combatReady` et `incomplete` depuis H0D Faction Builder v0.6.4.
+- Étiquettes explicites pour les références non chiffrées et affichage de la Menace inconnue.
+- Avertissements sur la disponibilité réelle des fiches et sur le comportement pacifique du Gardien Nexus.
+- Aucune génération de statistiques ni de coûts XP.
+
 ## v0.1.4 — Factions PDF, recettes de fin de campagne et protections
 - Intégration des profils Dent d'Ambre et HelioSium en lisant le Faction Builder v0.6.3, sans duplication de catalogues.
 - Liste des 9 recettes HelioSium sous le choix manuel ; conditions scénaristiques explicites, boss final unique jamais tiré.
