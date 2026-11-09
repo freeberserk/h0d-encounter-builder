@@ -1,3 +1,7 @@
+## v0.1.7 — Lancement sans écraser les macros personnalisées
+
+La macro « H0D — Encounter Builder » est dorénavant identifiée par le flag `flags.h0d-encounter-builder.launcher`. Une ancienne macro intacte est reconnue uniquement si son nom et son contenu correspondent exactement à la version officielle. Les macros personnalisées restent inchangées ; si le nom historique est occupé, un lanceur officiel distinct est créé. Une commande changée à la main dans une macro déjà marquée est également préservée au prochain redémarrage.
+
 ## v0.1.6 — Intégration des XP du Creature Builder
 
 - Les profils de faune sont lus depuis le H0D Creature Builder, y compris leur `H0D_Creature_XP` dès lors qu'il est chiffré.
