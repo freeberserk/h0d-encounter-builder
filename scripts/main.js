@@ -1,10 +1,11 @@
+import {ensureManagedLauncherMacro} from "./h0d-launcher-macro.js";
 import {EncounterUI} from './ui.js';
 import {collectProfiles,integrationStatus,getTableData,buildBiomePool,getHeliosiumRecipes,resolveProfileCosts} from './integrations.js';
 import {evaluateComposition,suggestComposition,budgetFor,eligibleTableEntries,weightedChoice,BIOMES} from './core.js';
 import {ensureDiscoveryTable,findDiscoveryTable,discoverySources} from './discoveries.js';
 import {prepareHeliosiumRecipe,heliosiumSynergyWarnings} from './endgame.js';
 const ID='h0d-encounter-builder';
-const VERSION='0.1.6';
+const VERSION='0.1.7';
 const data={seedTables:{},seedLoot:{},recipes:{},events:{},costs:{}};
 let uiInstance=null;
 function encounterContext(){
@@ -25,12 +26,11 @@ function open(){
   return (uiInstance??=new EncounterUI(data)).open();
 }
 async function ensureMacro(){
-  if(!game.user?.isGM)return;
-  const name='H0D — Encounter Builder';
-  const command='game.h0dEncounterBuilder.open();';
-  let macro=game.macros?.getName(name);
-  if(!macro)macro=await Macro.create({name,type:'script',scope:'global',img:'icons/svg/dice-target.svg',command});
-  else if(macro.command!==command)await macro.update({command});
+  return ensureManagedLauncherMacro({
+    moduleId:ID,name:'H0D — Encounter Builder',command:'game.h0dEncounterBuilder.open();',
+    img:'icons/svg/dice-target.svg',
+    notify:(level,message)=>ui.notifications?.[level]?.(message)
+  });
 }
 Hooks.once('init',()=>{
   game.settings.register(ID,'savedEncounters',{name:'Compositions sauvegardées H0D',scope:'world',config:false,type:Array,default:[]});

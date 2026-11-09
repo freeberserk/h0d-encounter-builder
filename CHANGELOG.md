@@ -1,5 +1,13 @@
 # Changements H0D Encounter Builder
 
+## v0.1.7 — Protéger les macros personnalisées
+- Introduit un marquage de propriété du lanceur avec mémorisation de la dernière commande générée.
+- Une macro ne peut plus être écrasée par simple égalité de nom ; les personnalisations sont conservées.
+- Anciennes macros officielles reconnues uniquement par correspondance exacte du nom et de la commande.
+- En cas de conflit, un lanceur officiel séparé est créé ; test automatique des principaux scénarios.
+- La mécanique d'XP v0.1.6 est inchangée. Validation Foundry v14 encore nécessaire.
+
+
 ## v0.1.6 — Coûts de faune depuis le Creature Builder
 - Lecture des XP chiffrés du Creature Builder pour compléter les profils de faune auparavant sans coût.
 - Préservation des coûts individuels documentés ; remplacement des coûts provisoires par les valeurs chiffrées des profils.
