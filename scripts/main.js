@@ -1,12 +1,16 @@
 import {EncounterUI} from './ui.js';
-import {collectProfiles,integrationStatus,getTableData,buildBiomePool,getHeliosiumRecipes} from './integrations.js';
+import {collectProfiles,integrationStatus,getTableData,buildBiomePool,getHeliosiumRecipes,resolveProfileCosts} from './integrations.js';
 import {evaluateComposition,suggestComposition,budgetFor,eligibleTableEntries,weightedChoice,BIOMES} from './core.js';
 import {ensureDiscoveryTable,findDiscoveryTable,discoverySources} from './discoveries.js';
 import {prepareHeliosiumRecipe,heliosiumSynergyWarnings} from './endgame.js';
 const ID='h0d-encounter-builder';
-const VERSION='0.1.5';
+const VERSION='0.1.6';
 const data={seedTables:{},seedLoot:{},recipes:{},events:{},costs:{}};
 let uiInstance=null;
+function encounterContext(){
+  const registry=collectProfiles();
+  return {registry,costs:resolveProfileCosts(registry,data.costs)};
+}
 async function loadData(){
   for(const [key,path] of [['seedTables','seed-tables'],['seedLoot','seed-loot'],['recipes','recipes'],['events','events'],['costs','costs']]){
     try{
@@ -47,8 +51,14 @@ Hooks.once('ready',async()=>{
     biomes:BIOMES,
     getTable:biome=>getTableData(biome,data.seedTables),
     getPool:biome=>buildBiomePool(biome,data.recipes),
-    validate:(composition,options={})=>evaluateComposition(composition,collectProfiles(),data.costs,options),
-    suggest:(composition,biome,options={})=>suggestComposition(composition,buildBiomePool(biome,data.recipes),collectProfiles(),data.costs,options),
+    validate:(composition,options={})=>{
+      const {registry,costs}=encounterContext();
+      return evaluateComposition(composition,registry,costs,options);
+    },
+    suggest:(composition,biome,options={})=>{
+      const {registry,costs}=encounterContext();
+      return suggestComposition(composition,buildBiomePool(biome,data.recipes),registry,costs,options);
+    },
     budget:budgetFor,
     heliosiumRecipes:getHeliosiumRecipes,
     prepareHeliosiumRecipe:(recipeId,opts={})=>prepareHeliosiumRecipe(getHeliosiumRecipes().find(r=>r.id===recipeId),collectProfiles(),opts),

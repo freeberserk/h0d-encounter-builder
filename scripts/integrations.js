@@ -40,7 +40,13 @@ export function collectProfiles(){
   }
   const creatures=sourceApi('h0d-creature-builder','h0dCreatureBuilder');
   for(const [key,value] of readMap(creatures?.creatures)){
-    registry.set('creature:'+key,{id:'creature:'+key,label:value.label??key,source:'creature',threat:Number(value.actor?.props?.H0D_Creature_Menace??0),role:value.actor?.props?.H0D_Creature_Role??'',originalKey:key});
+    const threat=Number(value.actor?.props?.H0D_Creature_Menace??0);
+    const rawXP=value.actor?.props?.H0D_Creature_XP;
+    const parsed=rawXP===null || rawXP===undefined || String(rawXP).trim()==="" ? null : Number(rawXP);
+    // Anciennes versions du Creature Builder : XP=0 par défaut, même pour les menaces > 0.
+    const xp=Number.isFinite(parsed) && parsed>=0 && (threat===0 || parsed>0) ? parsed : null;
+    registry.set('creature:'+key,{id:'creature:'+key,label:value.label??key,source:'creature',
+      threat,role:value.actor?.props?.H0D_Creature_Role??'',originalKey:key,xp});
   }
   const factions=sourceApi('h0d-faction-builder','h0dFactionBuilder');
   const names=new Map(readMap(factions?.factions).map(([key,value])=>[key,value?.label??key]));
@@ -56,6 +62,24 @@ export function collectProfiles(){
     });
   }
   return registry;
+}
+/**
+ * Le coût individuel documenté dans costs.json reste prioritaire.
+ * Le Creature Builder complète les profils manquants et remplace uniquement
+ * les coûts explicitement provisoires, sans inventer ceux des autres familles.
+ */
+export function resolveProfileCosts(registry, costTable={}) {
+  const resolved={...costTable};
+  for (const profile of registry?.values?.()??[]) {
+    if (profile.source!=="creature" || !Number.isFinite(profile.xp) || profile.xp<0) continue;
+    const previous=resolved[profile.id];
+    if (previous && Number.isFinite(Number(previous.xp)) && previous.provisional!==true) continue;
+    resolved[profile.id]={
+      xp:profile.xp,
+      source:"H0D Creature Builder — XP de profil (barème Menace / source individuelle)"
+    };
+  }
+  return resolved;
 }
 /** Recettes de fin de campagne exposées par le Faction Builder actif (jamais de tirage automatique). */
 export function getHeliosiumRecipes(){

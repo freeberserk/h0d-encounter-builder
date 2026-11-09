@@ -1,5 +1,5 @@
 import {BIOMES,DIFFICULTIES,TYPES,norm,budgetFor,eligibleTableEntries,weightedChoice,mergeComposition,evaluateComposition,suggestComposition,proposeTableScenario,chance,biomeName} from './core.js';
-import {collectProfiles,getTableData,buildBiomePool,findRecipe,lootCandidates,resolveLoot,integrationStatus,MANUAL_CATEGORIES,factionChoices,manualChoices,getHeliosiumRecipes} from './integrations.js';
+import {collectProfiles,getTableData,buildBiomePool,findRecipe,lootCandidates,resolveLoot,integrationStatus,resolveProfileCosts,MANUAL_CATEGORIES,factionChoices,manualChoices,getHeliosiumRecipes} from './integrations.js';
 import {prepareHeliosiumRecipe,heliosiumSynergyWarnings} from './endgame.js';
 import {findDiscoveryTable,chooseDiscoverySource,ensureDiscoveryTable,DISCOVERY_TABLE_NAME,DISCOVERY_SOURCE_LABELS} from './discoveries.js';
 const MID='h0d-encounter-builder';
@@ -35,7 +35,7 @@ const messageHTML = result => {
   </div>`;
 };
 export class EncounterUI {
-  constructor(data){this.data=data;this.registry=collectProfiles();this.costs=data.costs;this.state={
+  constructor(data){this.data=data;this.registry=collectProfiles();this.costs=resolveProfileCosts(this.registry,data.costs);this.state={
     biome:'gorges',level:3,difficulty:'standard',type:'tous',unfavorable:false,nearCauldron:false,
     mode:'table',manualCategory:'machine',manualFaction:'',profileId:'',qty:1,allyId:'',allyQty:1,allyRole:'combat',members:[],allies:[],
     eventChance:30,discoveryChance:20,discoverySource:'auto',selectedSave:'',sceneTitle:'',last:null,recipeId:'',recipeConditions:false,recipeFinal:false
@@ -43,6 +43,7 @@ export class EncounterUI {
   open(){
     if(this.dialog?.rendered){this.dialog.bringToTop();return this.dialog;}
     this.registry=collectProfiles();
+    this.costs=resolveProfileCosts(this.registry,this.data.costs);
     this.dialog=new Dialog({
       title:'H0D — Encounter Builder',content:this.template(),
       buttons:{close:{label:'Fermer'}},

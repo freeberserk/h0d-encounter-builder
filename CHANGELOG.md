@@ -1,5 +1,12 @@
 # Changements H0D Encounter Builder
 
+## v0.1.6 — Coûts de faune depuis le Creature Builder
+- Lecture des XP chiffrés du Creature Builder pour compléter les profils de faune auparavant sans coût.
+- Préservation des coûts individuels documentés ; remplacement des coûts provisoires par les valeurs chiffrées des profils.
+- Protection contre les XP à zéro des anciennes versions du Creature Builder, sauf Menace 0.
+- Mode manuel, propositions et API de validation alignés ; aucun Actor, Token ou fichier de coût historique modifié.
+
+
 ## v0.1.5 — Précautions HELIOS
 - Import des métadonnées `combatReady` et `incomplete` depuis H0D Faction Builder v0.6.4.
 - Étiquettes explicites pour les références non chiffrées et affichage de la Menace inconnue.

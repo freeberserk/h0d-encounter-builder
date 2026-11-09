@@ -1,3 +1,11 @@
+## v0.1.6 — Intégration des XP du Creature Builder
+
+- Les profils de faune sont lus depuis le H0D Creature Builder, y compris leur `H0D_Creature_XP` dès lors qu'il est chiffré.
+- Un coût individuel confirmé de `data/costs.json` reste prioritaire. Les coûts provisoires sont remplacés par les XP du profil documenté ; par exemple le serpent venimeux passe de 20 XP provisoires à 15 XP selon le barème de Menace 1.
+- Les profils jusqu'ici sans coût reçoivent le coût fourni par le Creature Builder (ex. Bête alpha de biome : 450 XP). Aucune valeur n'est inventée pour les profils dont l'XP demeure absent.
+- Les anciens Creature Builders, qui renseignaient 0 XP sur des Menaces positives, ne sont pas traités comme une source de coût 0.
+- Le calcul du budget du mode manuel, la suggestion de composition et l'API de validation utilisent le même mécanisme. Aucune fiche, table Foundry ou tarif historique n'est modifié automatiquement.
+
 # H0D Encounter Builder — v0.1.5 : HELIOS, concept ≠ combat
 
 Les 11 nouvelles références HELIOS du **Faction Builder v0.6.4** apparaissent dans `Composition manuelle → Factions → HELIOS`.
