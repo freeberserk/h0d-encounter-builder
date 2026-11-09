@@ -14,6 +14,8 @@ jobs:
         run: |
           npm test
           npm run check
+          node --check scripts/h0d-launcher-macro.js
+          node tests/launcher-macro.test.mjs
           python3 -m json.tool module.json > /dev/null
           python3 - <<'PY'
           import json,glob
